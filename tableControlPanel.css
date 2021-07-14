@@ -1,0 +1,60 @@
+@charset "utf-8";
+
+.tcp-on .tcp-panel{
+  display: block;
+}
+
+.tcp-panel{
+  display: none;
+  position: absolute;
+  top:0;left:0;width:100px;height:100px;
+  background-color: rgba(127,127,127,0.3);
+  cursor: default;
+  border: 1px dashed #000000;
+  box-sizing: border-box;
+  font-size:14px;
+}
+
+
+.tcp-panel-insert-row-up , 
+.tcp-panel-insert-row-right , 
+.tcp-panel-insert-row-down , 
+.tcp-panel-insert-row-left{
+  width:2em;
+  height:2em;  
+  position: absolute;
+  border: 1px solid #999;
+  line-height: 2em;
+  padding: 0;
+  border-radius: 50%;
+  cursor: copy;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color:#999;
+}
+.tcp-panel-insert-row-up::before , 
+.tcp-panel-insert-row-right::before , 
+.tcp-panel-insert-row-down::before , 
+.tcp-panel-insert-row-left::before{
+  content: "➕";
+}
+.tcp-panel-insert-row-up{
+  top:-2.5em;
+  left:calc(50% - 1em);
+}
+.tcp-panel-insert-row-right{
+  top:calc(50% - 1em);
+  right:-2.5em;
+}
+.tcp-panel-insert-row-down{
+  bottom:-2.5em;
+  left:calc(50% - 1em);
+}
+.tcp-panel-insert-row-left{
+  top:calc(50% - 1em);
+  left:-2.5em;
+}
