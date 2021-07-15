@@ -122,6 +122,7 @@ const tableControlPanel = (function(){
       this.appendTcps(cell);
       let w = this.activedTcps.w;
       let d = this.activedTcps.d
+      let tr = this.activedTcps.tr
       d.body.classList.add('tcp-on');
       let table = this.activedTcps.table;
 
@@ -138,15 +139,29 @@ const tableControlPanel = (function(){
       let height = bottom - top;
 
       let tdRect = cell.getBoundingClientRect();
-      // let tableRect = table.getBoundingClientRect();
+      let trRect = tr.getBoundingClientRect();
+      let cellColSpan1 = cell;
+      if(cell.colSpan>1){
+        let rowsCells = this.getRowsCells(table);
+        console.log(cell.__ridx,cell.__cidx);
+        for(let i=0,m=rowsCells.length;i<m;i++){
+          if(rowsCells[i][cell.__cidx].colSpan==1){
+            cellColSpan1 = rowsCells[i][cell.__cidx];
+            break;
+          }
+        }
+      }
+      let cellColSpan1Rect = cellColSpan1.getBoundingClientRect();
+
+
       let tcps = w.__tcps;
       tcps.tcpr.style.left=left+'px'
       tcps.tcpr.style.top=tdRect.top+'px'
       tcps.tcpr.style.width=width+'px'
-      tcps.tcpr.style.height=tdRect.height+'px'
+      tcps.tcpr.style.height=trRect.height+'px'
       tcps.tcpc.style.left=tdRect.left+'px'
       tcps.tcpc.style.top=top+'px'
-      tcps.tcpc.style.width=tdRect.width+'px'
+      tcps.tcpc.style.width=cellColSpan1Rect.width+'px'
       tcps.tcpc.style.height=height+'px'
     },
     hide:function(){
@@ -265,6 +280,8 @@ const tableControlPanel = (function(){
           for(let i=0,m=cell.rowSpan;i<m;i++){
             rowsCells[rowIndex+i].fill(cell,cellIndex,cellIndex+cell.colSpan)
           }
+          cell.__ridx = rowIndex;
+          cell.__cidx = cellIndex;
           cellIndex += cell.colSpan;
         })
       })
