@@ -3,32 +3,63 @@
 .tcp-on .tcp-panel{
   display: block;
 }
-
-.tcp-panel{
-  display: none;
-  position: absolute;
-  top:0;left:0;width:100px;height:100px;
-  background-color: rgba(127,127,127,0.3);
-  cursor: default;
-  border: 1px dashed #000000;
-  box-sizing: border-box;
-  font-size:14px;
+.tcp-on .tcp-row-panel,
+.tcp-on .tcp-col-panel{
+  display: block;
 }
 
+.tcp-row-panel ,
+.tcp-col-panel{
+  display: none;
+  position: fixed;
+  top:0;left:0;width:100px;height:100px;  
+  cursor: default;
+  box-sizing: border-box;
+  font-size:14px;
+  pointer-events: none;
+  z-index: 10;
+}
+.tcp-row-panel:hover ,
+.tcp-col-panel:hover{
+  z-index: 11;
+}
 
-.tcp-panel-insert-row-up , 
-.tcp-panel-insert-row-right , 
-.tcp-panel-insert-row-down , 
-.tcp-panel-insert-row-left{
-  width:2em;
-  height:2em;  
+.tcp-panel-deco{
+  /* border:1px dashed rgb(75, 207, 119); */
+  outline: 2px solid rgb(75, 207, 119);
+  /* border-width:3px 3px; */
+  width:100%;height:100%;
+  box-sizing: border-box;
+  position: absolute;
+  left:0;top:0;
+}
+
+.tcp-btn-insert-row-up:focus , 
+.tcp-btn-insert-row-down:focus , 
+.tcp-btn-insert-cell-left:focus,
+.tcp-btn-insert-cell-right:focus , 
+.tcp-btn-delete-row:focus,
+.tcp-btn-delete-cell:focus
+{
+  outline: 1px none;
+}
+.tcp-btn-insert-row-up , 
+.tcp-btn-insert-row-down , 
+.tcp-btn-insert-cell-left ,
+.tcp-btn-insert-cell-right , 
+.tcp-btn-delete-row,
+.tcp-btn-delete-cell
+{
+  pointer-events: all;
+  width:1.2em;
+  height:1.2em;  
   position: absolute;
   border: 1px solid #999;
   line-height: 2em;
   padding: 0;
-  border-radius: 50%;
-  cursor: copy;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  border-radius: 0.2em;
+  cursor: pointer;
+  box-shadow: 0 0 3px rgba(0,0,0,0.5);
   background-color: #fff;
   display: flex;
   justify-content: center;
@@ -36,25 +67,74 @@
   text-align: center;
   color:#999;
 }
-.tcp-panel-insert-row-up::before , 
-.tcp-panel-insert-row-right::before , 
-.tcp-panel-insert-row-down::before , 
-.tcp-panel-insert-row-left::before{
+.tcp-btn-insert-row-up::before , 
+.tcp-btn-insert-row-down::before , 
+.tcp-btn-insert-cell-left::before ,
+.tcp-btn-insert-cell-right::before 
+{
   content: "➕";
 }
-.tcp-panel-insert-row-up{
-  top:-2.5em;
-  left:calc(50% - 1em);
+.tcp-btn-delete-row::before , 
+.tcp-btn-delete-cell::before
+{
+  content: "➖";
 }
-.tcp-panel-insert-row-right{
-  top:calc(50% - 1em);
-  right:-2.5em;
+.tcp-btn-insert-row-up{
+  top:-0.6em;  
+  left:-1.5em;
 }
-.tcp-panel-insert-row-down{
-  bottom:-2.5em;
-  left:calc(50% - 1em);
+.tcp-btn-insert-row-down{
+  bottom:-0.6em;
+  left:-1.5em;
 }
-.tcp-panel-insert-row-left{
-  top:calc(50% - 1em);
-  left:-2.5em;
+.tcp-btn-delete-row{
+  top:calc(50% - 0.6em);
+  left:-1.5em;
+}
+.tcp-btn-insert-row-up:hover ~ .tcp-panel-deco{
+  top:-1px;
+  height:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
+}
+.tcp-btn-insert-row-down:hover ~ .tcp-panel-deco{
+  top:auto;
+  bottom:-1px;
+  height:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
+}
+.tcp-btn-delete-row:hover ~ .tcp-panel-deco{
+  outline-color: rgb(202, 83, 83);
+  background-color: rgba(202, 83, 83,0.5);
+}
+
+.tcp-btn-insert-cell-right{
+  top:-1.5em;
+  right:-0.6em;
+}
+.tcp-btn-insert-cell-left{
+  top:-1.5em;
+  left:-0.6em;
+}
+.tcp-btn-delete-cell{
+  top:-1.5em;
+  left:calc(50% - 0.6em);
+}
+.tcp-btn-insert-cell-left:hover ~ .tcp-panel-deco{
+  left:-1px;
+  width:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
+}
+.tcp-btn-insert-cell-right:hover ~ .tcp-panel-deco{
+  left:auto;
+  right:-1px;
+  width:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
+}
+.tcp-btn-delete-cell:hover ~ .tcp-panel-deco{
+  outline-color: rgb(202, 83, 83);
+  background-color: rgba(202, 83, 83,0.5);
 }
