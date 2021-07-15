@@ -141,8 +141,8 @@ const tableControlPanel = (function(){
       let tdRect = cell.getBoundingClientRect();
       let trRect = tr.getBoundingClientRect();
       let cellColSpan1 = cell;
+      let rowsCells = this.getRowsCells(table);
       if(cell.colSpan>1){
-        let rowsCells = this.getRowsCells(table);
         console.log(cell.__ridx,cell.__cidx);
         for(let i=0,m=rowsCells.length;i<m;i++){
           if(rowsCells[i][cell.__cidx].colSpan==1){
@@ -197,12 +197,27 @@ const tableControlPanel = (function(){
     deleteRow:function(){
       if(!this.activedTcps){ if(this.debug) console.log('activedTcps가 있어야만 동작합니다.'); return false; }
       if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
-      // let cell = this.activedTcps.cell;
+      let cell = this.activedTcps.cell;
       let tr = this.activedTcps.tr;
       let table = this.activedTcps.table;
       if(!table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
-      if(table.rows.length==1){ if(this.debug) console.log('table속 tr의 수가 1개에서는 삭제가 불가합니다.'); return false; }
-      table.deleteRow(tr.rowIndex);
+      let rowsCells = this.getRowsCells(table);
+      let ridx = cell.__ridx;
+      if(rowsCells[ridx].length==1){ if(this.debug) console.log('table속 tr의 수가 1개에서는 삭제가 불가합니다.'); return false; }
+      let targetCells = {};
+      rowsCells[ridx].forEach((cell)=>{
+        if(cell.rowSpan > 1){
+          targetCells[cell.__ridx+"_"+cell.__cidx] = cell;
+        }
+      })
+      for(let k in targetCells){
+        targetCells[k].rowSpan--;
+        if(targetCells[k].__ridx == cell.__ridx){
+          table.rows[ridx].insertCell(targetCells[k].__cidx)
+        }
+      }
+      cell.parentNode.remove()
+
       this.hide();
     },
     insertCell(isRight){
@@ -226,15 +241,19 @@ const tableControlPanel = (function(){
       if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
       let cell = this.activedTcps.cell;
       let table = this.activedTcps.table;
-      let cellIndex = cell.cellIndex;
       let rowsCells = this.getRowsCells(table);
+      let cidx = cell.__cidx;
+      let targetCells = {};
       rowsCells.forEach((cells)=>{
-        if(cells[cellIndex].colSpan==1){
-          cells[cellIndex].parentNode.deleteCell(cellIndex);
+        if(cells[cidx].colSpan==1){
+          cells[cidx].remove()
         }else{
-          cells[cellIndex].colSpan--;
+          targetCells[cell.__ridx+"_"+cell.__cidx] = cells[cidx];
         }
       })
+      for(let k in targetCells){
+        targetCells[k].colSpan--;
+      }
       this.show(cell);
     },
     getCells:function(tr){
