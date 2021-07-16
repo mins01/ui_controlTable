@@ -204,11 +204,6 @@ const tableControlPanel = (function(){
         // let w = this.activedTcpcs.w;
         let d = this.activedTcpcs.d;
         d.body.classList.remove('tcp-on');
-        this.activedTcpcs.w = null;
-        this.activedTcpcs.d = null;
-        this.activedTcpcs.cell = null;
-        this.activedTcpcs.tr = null;
-        this.activedTcpcs.table = null;
       }
       window.document.body.classList.remove('tcp-on');
     },
@@ -221,11 +216,11 @@ const tableControlPanel = (function(){
       let ridx = cell.__ridx+isDown;
       let rowsCells = this.activedTcpcs.rowsCells;
       table.insertRow(ridx);
-      let oldCells = rowsCells[ridx];
+      let oldCells = rowsCells[cell.__ridx];
       rowsCells.splice(ridx,0,new Array(rowsCells[0].length));
       let resizedCells = [];
       oldCells.forEach((cell,cidx)=>{
-        if(cell.rowSpan>1 && cell.__ridx != ridx){
+        if(cell && cell.rowSpan>1 && cell.__ridx != ridx){
           if(resizedCells.indexOf(cell)==-1){ //한번만 늘림
             cell.rowSpan++;
             resizedCells.push(cell);
@@ -282,7 +277,7 @@ const tableControlPanel = (function(){
 
       rowsCells.forEach((cells,ridx)=>{
         let cell = cells[cidx];
-        if(cell.colSpan>1 && cell.__cidx != cidx){
+        if(cell && cell.colSpan>1 && cell.__cidx != cidx){
           if(resizedCells.indexOf(cell)==-1){ //한번만 늘림
             cell.colSpan++;
             resizedCells.push(cell);
