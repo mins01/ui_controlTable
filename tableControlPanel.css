@@ -1,59 +1,71 @@
 @charset "utf-8";
 
-.tcp-on .tcp-panel{
+/*
+컨트롤 패널부
+*/
+.tcp-on .tcp-controls{
   display: block;
 }
-.tcp-on .tcp-row-panel,
-.tcp-on .tcp-col-panel{
-  display: block;
-}
-
-.tcp-row-panel ,
-.tcp-col-panel{
+.tcp-controls{
   display: none;
-  position: fixed;
-  top:0;left:0;width:100px;height:100px;  
-  cursor: default;
-  box-sizing: border-box;
-  font-size:14px;
+  height:0;width:0;
   pointer-events: none;
-  z-index: 10;
 }
-.tcp-row-panel:hover ,
-.tcp-col-panel:hover{
+.tcp-control{
+  width:100px;
+  height:100px;
+  position: fixed;
+  top:100px;
+  left:100px;
+  z-index: 10;
+  display: flex;
+  align-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  justify-content: center;
+  font-size:14px;
+}
+.tcp-control:hover{
   z-index: 11;
 }
+.tcp-control.tcp-row{
+  flex-direction: column;
+}
+.tcp-panel{
+  overflow: visible;
+  display: flex;
+  
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+.tcp-row > .tcp-panel{
+  flex-direction: column;
+  height: 100%;
+  min-height: 3em;
+  z-index: 10;
+  margin-left: -1.5em;
+}
+.tcp-col > .tcp-panel{
+  flex-direction: row;
+  width: 100%;
+  min-width: 3em;
+  flex-wrap: wrap;
+  z-index: 10;
+  margin-top: -1.5em;
+}
 
-.tcp-panel-deco{
-  /* border:1px dashed rgb(75, 207, 119); */
+.tcp-control .tcp-deco{
   outline: 2px solid rgb(75, 207, 119);
-  /* border-width:3px 3px; */
   width:100%;height:100%;
   box-sizing: border-box;
   position: absolute;
   left:0;top:0;
 }
-
-.tcp-btn-insert-row-up:focus , 
-.tcp-btn-insert-row-down:focus , 
-.tcp-btn-insert-cell-left:focus,
-.tcp-btn-insert-cell-right:focus , 
-.tcp-btn-delete-row:focus,
-.tcp-btn-delete-cell:focus
-{
-  outline: 1px none;
-}
-.tcp-btn-insert-row-up , 
-.tcp-btn-insert-row-down , 
-.tcp-btn-insert-cell-left ,
-.tcp-btn-insert-cell-right , 
-.tcp-btn-delete-row,
-.tcp-btn-delete-cell
-{
+.tcp-btn{
+  z-index: 10;
   pointer-events: all;
   width:1.2em;
   height:1.2em;  
-  position: absolute;
   border: 1px solid #999;
   line-height: 2em;
   padding: 0;
@@ -67,74 +79,64 @@
   text-align: center;
   color:#999;
 }
-.tcp-btn-insert-row-up::before , 
-.tcp-btn-insert-row-down::before , 
-.tcp-btn-insert-cell-left::before ,
-.tcp-btn-insert-cell-right::before 
+.tcp-panel > .tcp-btn[data-action="insertRow,0"]{
+  margin-top:-0.6em;
+}
+.tcp-panel > .tcp-btn[data-action="insertRow,1"]{
+  margin-bottom:-0.6em;
+}
+.tcp-panel > .tcp-btn[data-action="insertCell,0"]{
+  margin-left:-0.6em;
+}
+.tcp-panel > .tcp-btn[data-action="insertCell,1"]{
+  margin-right:-0.6em;
+}
+
+.tcp-btn-insertRow-0::before ,
+.tcp-btn-insertRow-1::before ,
+.tcp-btn-insertCell-0::before ,
+.tcp-btn-insertCell-1::before
 {
   content: "➕";
 }
-.tcp-btn-delete-row::before , 
-.tcp-btn-delete-cell::before
+.tcp-btn-deleteRow::before ,
+.tcp-btn-deleteCell::before
 {
   content: "➖";
 }
-.tcp-btn-insert-row-up{
-  top:-0.6em;  
-  left:-1.5em;
-}
-.tcp-btn-insert-row-down{
-  bottom:-0.6em;
-  left:-1.5em;
-}
-.tcp-btn-delete-row{
-  top:calc(50% - 0.6em);
-  left:-1.5em;
-}
-.tcp-btn-insert-row-up:hover ~ .tcp-panel-deco{
-  top:-1px;
-  height:1px;
-  outline-color: rgb(0, 26, 255);
-  background-color: rgb(0, 26, 255);
-}
-.tcp-btn-insert-row-down:hover ~ .tcp-panel-deco{
-  top:auto;
-  bottom:-1px;
-  height:1px;
-  outline-color: rgb(0, 26, 255);
-  background-color: rgb(0, 26, 255);
-}
-.tcp-btn-delete-row:hover ~ .tcp-panel-deco{
-  outline-color: rgb(202, 83, 83);
-  background-color: rgba(202, 83, 83,0.5);
-}
 
-.tcp-btn-insert-cell-right{
-  top:-1.5em;
-  right:-0.6em;
-}
-.tcp-btn-insert-cell-left{
-  top:-1.5em;
-  left:-0.6em;
-}
-.tcp-btn-delete-cell{
-  top:-1.5em;
-  left:calc(50% - 0.6em);
-}
-.tcp-btn-insert-cell-left:hover ~ .tcp-panel-deco{
+.tcp-panel > .tcp-btn[data-action="insertCell,0"]:hover  ~ .tcp-deco{
   left:-1px;
   width:1px;
   outline-color: rgb(0, 26, 255);
   background-color: rgb(0, 26, 255);
 }
-.tcp-btn-insert-cell-right:hover ~ .tcp-panel-deco{
+.tcp-panel > .tcp-btn[data-action="deleteCell"]:hover  ~ .tcp-deco{
+  outline-color: rgb(202, 83, 83);
+  background-color: rgba(202, 83, 83,0.5);
+}
+.tcp-panel > .tcp-btn[data-action="insertCell,1"]:hover  ~ .tcp-deco{
   left:auto;
   right:-1px;
   width:1px;
   outline-color: rgb(0, 26, 255);
   background-color: rgb(0, 26, 255);
 }
-.tcp-btn-delete-cell:hover ~ .tcp-panel-deco{
+
+.tcp-panel > .tcp-btn[data-action="insertRow,0"]:hover  ~ .tcp-deco{
+  top:-1px;
+  height:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
+}
+.tcp-panel > .tcp-btn[data-action="deleteRow"]:hover  ~ .tcp-deco{
   outline-color: rgb(202, 83, 83);
   background-color: rgba(202, 83, 83,0.5);
+}
+.tcp-panel > .tcp-btn[data-action="insertRow,1"]:hover  ~ .tcp-deco{
+  top:auto;
+  bottom:-1px;
+  height:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
 }

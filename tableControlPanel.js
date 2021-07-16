@@ -17,7 +17,7 @@ const tableControlPanel = (function(){
   }
   let tableControlPanel = {
     debug:false,
-    activedTcps:null,
+    activedTcpcs:null,
     addedEvent:false,
     addEvent:function(w){
       if(this.addedEvent){return false;}
@@ -34,15 +34,15 @@ const tableControlPanel = (function(){
       let insertRowUp = d.createElement('button');
       insertRowUp.className = 'tcp-btn-insert-row-up';
       insertRowUp.onclick = function(){ tableControlPanel.insertRow(0)};
-      tcpr.appendChild(insertRowUp);
       let insertRowDown = d.createElement('button');
       insertRowDown.onclick = function(){ tableControlPanel.insertRow(1)};
       insertRowDown.className = 'tcp-btn-insert-row-down';
-      tcpr.appendChild(insertRowDown);
       let deleteRow = d.createElement('button');
       deleteRow.onclick = function(){ tableControlPanel.deleteRow(0)};
       deleteRow.className = 'tcp-btn-delete-row';
+      tcpr.appendChild(insertRowUp);
       tcpr.appendChild(deleteRow);
+      tcpr.appendChild(insertRowDown);
       let deco = d.createElement('div');
       deco.className = 'tcp-panel-deco';
       tcpr.appendChild(deco);
@@ -72,40 +72,75 @@ const tableControlPanel = (function(){
 
       return tcpc;
     },
+    createTcpcs:function(d){
+      let html = //<div class="tcp-control tcpcs">
+        '<div class="tcp-control tcp-row tcpr">\
+          <div class="tcp-panel">\
+            <button class="tcp-btn tcp-btn-insertRow-0" data-action="insertRow,0"></button>\
+            <button class="tcp-btn tcp-btn-deleteRow" data-action="deleteRow"></button>\
+            <button class="tcp-btn tcp-btn-insertRow-1" data-action="insertRow,1"></button>\
+            <div  class="tcp-deco"></div>\
+          </div>\
+        </div>\
+        <div class="tcp-control tcp-col tcpc">\
+          <div class="tcp-panel">\
+            <button class="tcp-btn tcp-btn-insertCell-0" data-action="insertCell,0"></button>\
+            <button class="tcp-btn tcp-btn-deleteCell" data-action="deleteCell"></button>\
+            <button class="tcp-btn tcp-btn-insertCell-1" data-action="insertCell,1"></button>\
+            <div  class="tcp-deco"></div>\
+          </div>\
+        </div>';
+      //</div>';
+      let tcpcs = d.createElement('div');
+      tcpcs.className='tcp-controls';
+      tcpcs.innerHTML = html;
+      tcpcs.querySelector('.tcp-btn-insertRow-0').onclick = function(){ tableControlPanel.insertRow(0)};
+      tcpcs.querySelector('.tcp-btn-insertRow-1').onclick = function(){ tableControlPanel.insertRow(1)};
+      tcpcs.querySelector('.tcp-btn-deleteRow').onclick = function(){ tableControlPanel.deleteRow()};
+      tcpcs.querySelector('.tcp-btn-insertCell-0').onclick = function(){ tableControlPanel.insertCell(0)};
+      tcpcs.querySelector('.tcp-btn-insertCell-1').onclick = function(){ tableControlPanel.insertCell(1)};
+      tcpcs.querySelector('.tcp-btn-deleteCell').onclick = function(){ tableControlPanel.deleteCell()};
+      tcpcs.tcpr = tcpcs.querySelector('.tcpr');
+      tcpcs.tcpc = tcpcs.querySelector('.tcpc');
+      document.body.append(tcpcs);
+      return tcpcs;
+    },
     appendTcps:function(cell){
-      let tcps,tcpr,tcpc ;
+      let tcpcs,tcpr,tcpc ;
       let w = cell.ownerDocument.defaultView;
       let d = w.document
-      if(w.__tcps){
-        if(this.debug) console.log('이미 tcps가 생성되어있음.');
-        tcps = w.__tcps;
+      if(w.__tcpcs){
+        if(this.debug) console.log('이미 tcpcs가 생성되어있음.');
+        tcpcs = w.__tcpcs;
       }else{
-        tcps = {}
-        tcpr = this.createTcpr();
-        d.body.appendChild(tcpr);
-        tcpc = this.createTcpc();
-        d.body.appendChild(tcpc);
-        w.__tcps = tcps;
-        tcps.tcpr = tcpr;
-        tcps.tcpc = tcpc;
+        // tcpcs = {}
+        // tcpr = this.createTcpr();
+        // d.body.appendChild(tcpr);
+        // tcpc = this.createTcpc();
+        // d.body.appendChild(tcpc);
+        // tcpcs.tcpr = tcpr;
+        // tcpcs.tcpc = tcpc;
+        tcpcs = this.createTcpcs(d);
+        w.__tcpcs = tcpcs;
       }
-      this.activedTcps = tcps;
-      this.activedTcps.w = w;
-      this.activedTcps.d = d;
-      this.activedTcps.cell = cell
-      this.activedTcps.tr = cell.parentNode;
-      this.activedTcps.table = cell.closest('table');
-      return tcps;
+      this.activedTcpcs = tcpcs;
+      this.activedTcpcs.w = w;
+      this.activedTcpcs.d = d;
+      this.activedTcpcs.cell = cell
+      this.activedTcpcs.tr = cell.parentNode;
+      this.activedTcpcs.table = cell.closest('table');
+      this.activedTcpcs.rowsCells = this.getRowsCells(this.activedTcpcs.table);
+      return tcpcs;
     },
     redraw:function(){
-      if(this.activedTcps && this.activedTcps.cell && this.activedTcps.d){
-        if(this.activedTcps.d.body.classList.contains('tcp-on')){
-          this.show(this.activedTcps.cell)
+      if(this.activedTcpcs && this.activedTcpcs.cell && this.activedTcpcs.d){
+        if(this.activedTcpcs.d.body.classList.contains('tcp-on')){
+          this.show(this.activedTcpcs.cell)
         }
       }
     },
     show:function(node){
-      if(node.closest('.tcp-row-panel , .tcp-col-panel')){return}
+      if(node.closest('.tcp-controls')){return}
       let cell = node.closest('td,th');
       if(!cell || (cell.tagName!='TD' && cell.tagName!='TH')){
         if(this.debug) console.log('TD,TH만 동작');
@@ -120,11 +155,12 @@ const tableControlPanel = (function(){
       }
       // console.log("show 동작");
       this.appendTcps(cell);
-      let w = this.activedTcps.w;
-      let d = this.activedTcps.d
-      let tr = this.activedTcps.tr
+      let w = this.activedTcpcs.w;
+      let d = this.activedTcpcs.d
+      let tr = this.activedTcpcs.tr
       d.body.classList.add('tcp-on');
-      let table = this.activedTcps.table;
+      let table = this.activedTcpcs.table;
+      let rowsCells = this.activedTcpcs.rowsCells;
 
       let cells = table.querySelectorAll('td,th');
       let firstCell = cells[0];
@@ -141,7 +177,6 @@ const tableControlPanel = (function(){
       let tdRect = cell.getBoundingClientRect();
       let trRect = tr.getBoundingClientRect();
       let cellColSpan1 = cell;
-      let rowsCells = this.getRowsCells(table);
       if(cell.colSpan>1){
         console.log(cell.__ridx,cell.__cidx);
         for(let i=0,m=rowsCells.length;i<m;i++){
@@ -154,40 +189,37 @@ const tableControlPanel = (function(){
       let cellColSpan1Rect = cellColSpan1.getBoundingClientRect();
 
 
-      let tcps = w.__tcps;
-      tcps.tcpr.style.left=left+'px'
-      tcps.tcpr.style.top=tdRect.top+'px'
-      tcps.tcpr.style.width=width+'px'
-      tcps.tcpr.style.height=trRect.height+'px'
-      tcps.tcpc.style.left=tdRect.left+'px'
-      tcps.tcpc.style.top=top+'px'
-      tcps.tcpc.style.width=cellColSpan1Rect.width+'px'
-      tcps.tcpc.style.height=height+'px'
+      let tcpcs = w.__tcpcs;
+      tcpcs.tcpr.style.left=left+'px'
+      tcpcs.tcpr.style.top=tdRect.top+'px'
+      tcpcs.tcpr.style.width=width+'px'
+      tcpcs.tcpr.style.height=trRect.height+'px'
+      tcpcs.tcpc.style.left=tdRect.left+'px'
+      tcpcs.tcpc.style.top=top+'px'
+      tcpcs.tcpc.style.width=cellColSpan1Rect.width+'px'
+      tcpcs.tcpc.style.height=height+'px'
     },
     hide:function(){
-      if(this.activedTcps){
-        // let w = this.activedTcps.w;
-        let d = this.activedTcps.d;
+      if(this.activedTcpcs){
+        // let w = this.activedTcpcs.w;
+        let d = this.activedTcpcs.d;
         d.body.classList.remove('tcp-on');
-        this.activedTcps.w = null;
-        this.activedTcps.d = null;
-        this.activedTcps.cell = null;
-        this.activedTcps.tr = null;
-        this.activedTcps.table = null;
+        this.activedTcpcs.w = null;
+        this.activedTcpcs.d = null;
+        this.activedTcpcs.cell = null;
+        this.activedTcpcs.tr = null;
+        this.activedTcpcs.table = null;
       }
       window.document.body.classList.remove('tcp-on');
     },
     insertRow:function(isDown){
-      if(!this.activedTcps){ if(this.debug) console.log('activedTcps가 있어야만 동작합니다.'); return false; }
-      if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
-      let cell = this.activedTcps.cell;
-      let table = this.activedTcps.table;
-      if(!table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
-      let tr = this.activedTcps.tr;
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      let table = this.activedTcpcs.table;
       let ridx = cell.__ridx+isDown;
-      // let new_tr = table.insertRow(tr.rowIndex+isDown);
-      // let cells = this.getCells(tr);
-      let rowsCells = this.getRowsCells(table);
+      let rowsCells = this.activedTcpcs.rowsCells;
       table.insertRow(ridx);
       let oldCells = rowsCells[ridx];
       rowsCells.splice(ridx,0,new Array(rowsCells[0].length));
@@ -210,12 +242,12 @@ const tableControlPanel = (function(){
       this.show(cell);
     },
     deleteRow:function(){
-      if(!this.activedTcps){ if(this.debug) console.log('activedTcps가 있어야만 동작합니다.'); return false; }
-      if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
-      let cell = this.activedTcps.cell;
-      let table = this.activedTcps.table;
-      if(!table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
-      let rowsCells = this.getRowsCells(table);
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      let table = this.activedTcpcs.table;
+      let rowsCells = this.activedTcpcs.rowsCells;
       let ridx = cell.__ridx;
       if(rowsCells.length==1){ if(this.debug) console.log('table속 tr의 수가 1개에서는 삭제가 불가합니다.'); return false; }
 
@@ -239,12 +271,13 @@ const tableControlPanel = (function(){
       this.hide();
     },
     insertCell(isRight){
-      if(!this.activedTcps){ if(this.debug) console.log('activedTcps가 있어야만 동작합니다.'); return false; }
-      if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
-      let cell = this.activedTcps.cell;
-      let table = this.activedTcps.table;
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      let table = this.activedTcpcs.table;
       let cidx = cell.__cidx+isRight;
-      let rowsCells = this.getRowsCells(table);
+      let rowsCells = this.activedTcpcs.rowsCells;
       let resizedCells = [];
 
       rowsCells.forEach((cells,ridx)=>{
@@ -270,11 +303,12 @@ const tableControlPanel = (function(){
       this.show(cell);
     },
     deleteCell(){
-      if(!this.activedTcps){ if(this.debug) console.log('activedTcps가 있어야만 동작합니다.'); return false; }
-      if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
-      let cell = this.activedTcps.cell;
-      let table = this.activedTcps.table;
-      let rowsCells = this.getRowsCells(table);
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      let table = this.activedTcpcs.table;
+      let rowsCells = this.activedTcpcs.rowsCells;
       let cidx = cell.__cidx;
       let deletedCells;
       if(rowsCells[0].length==1){ console.warn('cell이 1개만 있습니다. 삭제할 수 없습니다.'); return false; }
