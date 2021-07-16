@@ -24,7 +24,7 @@
   box-sizing: border-box;
   justify-content: center;
   font-size:14px;
-  opacity: 0.3;
+  opacity: 0.5;
 }
 .tcp-control.tcp-cell{
   z-index: 12;
@@ -60,12 +60,24 @@
   z-index: 10;
   margin-top: -1.5em;
 }
+.tcp-control.tcp-cell{
+  justify-content: center;
+  align-items: center;
+}
+
 .tcp-cell > .tcp-panel{
   z-index: 10;
-  margin-top: -1.5em;
+  /* margin-top: -1.5em; */
   display: grid;
-  grid-template-areas: ". up ." "left . right" ". down .";
+  width:100%;
+  height:100%;
+  min-height:3.6em;
+  grid-template-areas: ". up ." "left . right" ". down split";
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  /* gap: 0.2em; */
 }
+
 
 .tcp-control .tcp-deco{
   outline: 2px solid rgb(75, 207, 119);
@@ -162,28 +174,61 @@
   outline-color: rgb(83, 202, 129);
   background-color: rgba(83, 202, 129,0.5);
 }
-
-.tcp-control.tcp-cell{
-  justify-content: flex-end;
-  align-items: flex-end;
+.tcp-cell > .tcp-panel > .tcp-btn.tcp-btn-split:hover ~ .tcp-deco{
+  outline-color: rgb(202, 83, 83);
+  background-color: rgba(202, 83, 83,0.5);
 }
 
-.tcp-control.tcp-cell .tcp-panel{
-  margin-right:-2.8em;
-  margin-bottom:-2.8em;
-}
+
 
 .tcp-btn-merge-left{
+  place-self:center flex-start;
   grid-area: left;
+  margin-left:-0.6em;
 }
 .tcp-btn-merge-up{
+  place-self:flex-start center;
   grid-area: up;
+  margin-top:-0.6em;
 }
 .tcp-btn-merge-right{
+  place-self:center flex-end;
   grid-area: right;
+  margin-right:-0.6em;
 
 }
 .tcp-btn-merge-down{
+  place-self:flex-end center;
   grid-area: down;
+  margin-bottom:-0.6em;
+}
+.tcp-btn-split{
+  grid-area: split;
+  place-self:flex-end flex-end;
+  margin-right:-0.6em;
+  margin-bottom:-0.6em;
+}
 
+.tcp-btn-merge-left::before{
+  content: "⏪";
+}
+.tcp-btn-merge-up::before{
+  content: "⏫";
+}
+.tcp-btn-merge-right::before{
+  content: "⏩";
+}
+.tcp-btn-merge-down::before{
+  content: "⏬";
+}
+.tcp-btn-split::before{
+  content: "✳️";
+}
+
+.tcp-controls[data-cell-rpos="first"] .tcp-btn-merge-up ,
+.tcp-controls[data-cell-rpos="last"] .tcp-btn-merge-down ,
+.tcp-controls[data-cell-cpos="first"] .tcp-btn-merge-left ,
+.tcp-controls[data-cell-cpos="last"] .tcp-btn-merge-right ,
+.tcp-controls[data-cell-merged=""] .tcp-btn-split {
+  display: none;
 }

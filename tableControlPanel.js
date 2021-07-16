@@ -38,7 +38,7 @@ const tableControlPanel = (function(){
           </div>\
         </div>\
         <div class="tcp-control tcp-col tcpcol">\
-          <div class="tcp-panel"  title="cell control">\
+          <div class="tcp-panel"  title="column control">\
             <button class="tcp-btn tcp-btn-insertCell-0" ></button>\
             <button class="tcp-btn tcp-btn-deleteCell" ></button>\
             <button class="tcp-btn tcp-btn-insertCell-1" ></button>\
@@ -51,6 +51,7 @@ const tableControlPanel = (function(){
             <button class="tcp-btn tcp-btn-merge-left" ></button>\
             <button class="tcp-btn tcp-btn-merge-down" ></button>\
             <button class="tcp-btn tcp-btn-merge-right" ></button>\
+            <button class="tcp-btn tcp-btn-split" title="split" ></button>\
             <div  class="tcp-deco"></div>\
           </div>\
         </div>\
@@ -71,6 +72,7 @@ const tableControlPanel = (function(){
       tcpcs.querySelector('.tcp-btn-merge-down').onclick = function(){ tableControlPanel.mergeCell(1,0)};
       tcpcs.querySelector('.tcp-btn-merge-left').onclick = function(){ tableControlPanel.mergeCell(0,-1)};
       tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(){ tableControlPanel.mergeCell(0,1)};
+      tcpcs.querySelector('.tcp-btn-split').onclick = function(){ tableControlPanel.splitCellAll()};
 
       tcpcs.tcprow = tcpcs.querySelector('.tcprow');
       tcpcs.tcpcol = tcpcs.querySelector('.tcpcol');
@@ -96,6 +98,13 @@ const tableControlPanel = (function(){
       this.activedTcpcs.tr = cell.parentNode;
       this.activedTcpcs.table = cell.closest('table');
       this.activedTcpcs.rowsCells = this.getRowsCells(this.activedTcpcs.table);
+
+      this.activedTcpcs.setAttribute('data-cell-ridx',cell.__ridx)
+      this.activedTcpcs.setAttribute('data-cell-cidx',cell.__cidx)
+      this.activedTcpcs.setAttribute('data-cell-rpos',cell.__ridx==0?'first':(cell.__ridx==this.activedTcpcs.rowsCells.length-1?'last':''))
+      this.activedTcpcs.setAttribute('data-cell-cpos',cell.__cidx==0?'first':(cell.__cidx==this.activedTcpcs.rowsCells[0].length-1?'last':''))
+      this.activedTcpcs.setAttribute('data-cell-merged',cell.colSpan+cell.rowSpan>2?'merged':'')
+
       return tcpcs;
     },
     redraw:function(){
@@ -127,10 +136,6 @@ const tableControlPanel = (function(){
       d.body.classList.add('tcp-on');
       let table = this.activedTcpcs.table;
       let rowsCells = this.activedTcpcs.rowsCells;
-
-      this.activedTcpcs.setAttribute('data-cell-ridx',this.activedTcpcs.cell.__ridx)
-      this.activedTcpcs.setAttribute('data-cell-cidx',this.activedTcpcs.cell.__cidx)
-
 
       let cells = table.querySelectorAll('td,th');
       let firstCell = cells[0];
@@ -360,6 +365,30 @@ const tableControlPanel = (function(){
         }
       }
 
+      if(this.debug) console.log(rowsCells);
+      this.redrawTableWithRowsCells(table,rowsCells)
+      this.show(cell);
+    },
+    splitCellAll:function(){
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      let rowsCells = this.activedTcpcs.rowsCells;
+      let table = this.activedTcpcs.table;
+
+      for(let i1=cell.__ridx,m1=cell.__ridx+cell.rowSpan;i1<m1;i1++){
+        for(let i2=cell.__cidx,m2=cell.__cidx+cell.colSpan;i2<m2;i2++){
+          if(i1==cell.__ridx && i2==cell.__cidx){
+            continue;
+          }
+          let new_td = document.createElement('td');
+          new_td.innerHTML = '&nbsp;';
+          rowsCells[i1][i2] = new_td;
+        }
+      }
+      cell.colSpan=1;
+      cell.rowSpan=1;
       if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
