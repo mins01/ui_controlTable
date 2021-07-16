@@ -314,17 +314,24 @@ const tableControlPanel = (function(){
       
       if(isDown == 1){
         if(!rowsCells[ridx+cell.rowSpan+1-1]){ if(this.debug) console.log('없는 row를 지정하였습니다.'); return false; }
-        let tCell = rowsCells[ridx+cell.rowSpan+1-1][cidx];
-        if (!tCell || tCell.colSpan != cell.colSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
-        if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
-        cell.rowSpan+=tCell.rowSpan;
-      }
-      ridx = cell.__ridx;
-      cidx = cell.__cidx;
-      if(isDown == -1){
+        let rangedCells = this.toCellsForRowsCells(this.getRangedRowsCells(rowsCells,ridx+cell.rowSpan-1+1,ridx+cell.rowSpan-1+1,cidx,cidx+cell.colSpan-1)) //영형 받는 범위의 셀 찾기
+        let addRowSpan = 0;
+        for(let i=0,m=rangedCells.length;i<m;i++){
+          addRowSpan = rangedCells[i].rowSpan;
+          if(rangedCells[i+1] && rangedCells[i].rowSpan != rangedCells[i+1].rowSpan){
+            if(!able){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
+          }
+          if (rangedCells[i].parentNode.parentNode != cell.parentNode.parentNode){ 
+            console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; 
+          }
+        }
+        cell.rowSpan+=addRowSpan;
+        ridx = cell.__ridx;
+        cidx = cell.__cidx;
+      }else if(isDown == -1){
         if(!rowsCells[ridx-1]){ if(this.debug) console.log('없는 row를 지정하였습니다.'); return false; }
         let tCell = rowsCells[ridx-1][cidx];
-        if (!tCell || tCell.colSpan != cell.colSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
+        if (!tCell || tCell.colSpan > cell.colSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
         if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
         cell.rowSpan+=tCell.rowSpan;
         rowsCells[tCell.__ridx][tCell.__cidx] = cell;
@@ -442,6 +449,24 @@ const tableControlPanel = (function(){
         })
       })
       return rowsCells;
+    },
+    toCellsForRowsCells:function(rowsCells){
+      let new_cells = [];
+      rowsCells.forEach(cells => {
+        new_cells = new_cells.concat(cells);
+      });
+      return new_cells;
+    },
+    getRangedRowsCells:function(rowsCells,r1,r2,c1,c2){
+      let rangedRowsCells = []
+      for(let i1=r1,m1=r2;i1<=m1;i1++){
+        let row = [];
+        rangedRowsCells.push(row)
+        for(let i2=c1,m2=c2;i2<=m2;i2++){
+          row.push(rowsCells[i1][i2]);
+        }
+      }
+      return rangedRowsCells;
     },
     redrawTableWithRowsCells:function(table,rowsCells){
       let rows = table.rows;
