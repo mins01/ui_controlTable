@@ -184,40 +184,58 @@ const tableControlPanel = (function(){
       let table = this.activedTcps.table;
       if(!table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
       let tr = this.activedTcps.tr;
-      // let table = this.activedTcps.table;
-      let new_tr = table.insertRow(tr.rowIndex+isDown);
-      let cells = this.getCells(tr);
-      let new_td = null;
-      for(let i=0,m=cells.length;i<m;i++){
-        new_td = new_tr.insertCell(-1);
-        new_td.innerHTML = '&nbsp;';
-      }
+      let ridx = cell.__ridx+isDown;
+      // let new_tr = table.insertRow(tr.rowIndex+isDown);
+      // let cells = this.getCells(tr);
+      let rowsCells = this.getRowsCells(table);
+      table.insertRow(ridx);
+      let oldCells = rowsCells[ridx];
+      rowsCells.splice(ridx,0,new Array(rowsCells[0].length));
+      let resizedCells = [];
+      oldCells.forEach((cell,cidx)=>{
+        if(cell.rowSpan>1 && cell.__ridx != ridx){
+          if(resizedCells.indexOf(cell)==-1){ //한번만 늘림
+            cell.rowSpan++;
+            resizedCells.push(cell);
+          }
+          rowsCells[ridx][cidx] = cell;
+        }else{
+          let new_td = document.createElement('td');
+          new_td.innerHTML = '&nbsp;';
+          rowsCells[ridx][cidx] = new_td;
+        }
+      })
+      if(this.debug) console.log(rowsCells);
+      this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
     },
     deleteRow:function(){
       if(!this.activedTcps){ if(this.debug) console.log('activedTcps가 있어야만 동작합니다.'); return false; }
       if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
       let cell = this.activedTcps.cell;
-      let tr = this.activedTcps.tr;
       let table = this.activedTcps.table;
       if(!table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
       let rowsCells = this.getRowsCells(table);
       let ridx = cell.__ridx;
-      if(rowsCells[ridx].length==1){ if(this.debug) console.log('table속 tr의 수가 1개에서는 삭제가 불가합니다.'); return false; }
-      let targetCells = {};
-      rowsCells[ridx].forEach((cell)=>{
-        if(cell.rowSpan > 1){
-          targetCells[cell.__ridx+"_"+cell.__cidx] = cell;
-        }
-      })
-      for(let k in targetCells){
-        targetCells[k].rowSpan--;
-        if(targetCells[k].__ridx == cell.__ridx){
-          table.rows[ridx].insertCell(targetCells[k].__cidx)
-        }
-      }
-      cell.parentNode.remove()
+      if(rowsCells.length==1){ if(this.debug) console.log('table속 tr의 수가 1개에서는 삭제가 불가합니다.'); return false; }
 
+      table.deleteRow(ridx);
+      let deletedRowsCells = rowsCells.splice(ridx,1)
+      deletedRowsCells.forEach((deletedCells)=>{
+        let resizedCells = [];
+        deletedCells.forEach((deletedCell)=>{
+          if(deletedCell.rowSpan==1){
+            deletedCell.remove();
+          }else{
+            if(resizedCells.indexOf(deletedCell)==-1){ //1row에 한번만 줄임
+              deletedCell.rowSpan--;
+              resizedCells.push(deletedCell);
+            }
+          }
+        })
+      })
+      this.redrawTableWithRowsCells(table,rowsCells)
+      if(this.debug) console.log(rowsCells);
       this.hide();
     },
     insertCell(isRight){
@@ -225,15 +243,30 @@ const tableControlPanel = (function(){
       if(!this.activedTcps.cell){ if(this.debug) console.log('activedTcps.cell가 있어야만 동작합니다.'); return false; }
       let cell = this.activedTcps.cell;
       let table = this.activedTcps.table;
-      let cellIndex = cell.cellIndex+isRight;
+      let cidx = cell.__cidx+isRight;
       let rowsCells = this.getRowsCells(table);
-      rowsCells.forEach((cells)=>{
-        if(cells[cellIndex].colSpan==1){
-          cells[cellIndex].parentNode.insertCell(cellIndex);
+      let resizedCells = [];
+
+      rowsCells.forEach((cells,ridx)=>{
+        let cell = cells[cidx];
+        if(cell.colSpan>1 && cell.__cidx != cidx){
+          if(resizedCells.indexOf(cell)==-1){ //한번만 늘림
+            cell.colSpan++;
+            resizedCells.push(cell);
+            console.log(cell);
+          }
+          // rowsCells[ridx][cidx] = cell;
+          rowsCells[ridx].splice(cidx,0,cell);
         }else{
-          cells[cellIndex].colSpan++;
+          let new_td = document.createElement('td');
+          new_td.innerHTML = '&nbsp;';
+          // rowsCells[ridx][cidx] = new_td;
+          rowsCells[ridx].splice(cidx,0,new_td);
+          console.log(ridx,cidx);
         }
       })
+      if(this.debug) console.log(rowsCells);
+      this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
     },
     deleteCell(){
@@ -243,17 +276,20 @@ const tableControlPanel = (function(){
       let table = this.activedTcps.table;
       let rowsCells = this.getRowsCells(table);
       let cidx = cell.__cidx;
-      let targetCells = {};
+      let deletedCells;
+      if(rowsCells[0].length==1){ console.warn('cell이 1개만 있습니다. 삭제할 수 없습니다.'); return false; }
       rowsCells.forEach((cells)=>{
-        if(cells[cidx].colSpan==1){
-          cells[cidx].remove()
-        }else{
-          targetCells[cell.__ridx+"_"+cell.__cidx] = cells[cidx];
-        }
+        deletedCells = cells.splice(cidx,1);
+        deletedCells.forEach((deletedCell)=>{
+          if(deletedCell.colSpan==1){
+            deletedCell.remove();
+          }else{
+            deletedCell.colSpan--;
+          }
+        })
       })
-      for(let k in targetCells){
-        targetCells[k].colSpan--;
-      }
+      if(this.debug) console.log(rowsCells);
+      this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
     },
     getCells:function(tr){
@@ -305,6 +341,17 @@ const tableControlPanel = (function(){
         })
       })
       return rowsCells;
+    },
+    redrawTableWithRowsCells:function(table,rowsCells){
+      let rows = table.rows;
+      let cells = null;
+      for(let i=rows.length-1,m=0;i>=m;i--){
+        cells = rowsCells[i];
+        for(let i2=cells.length-1,m2=0;i2>=m2;i2--){
+          rows[i].prepend(cells[i2])
+        }
+        
+      }
     }
 
 
