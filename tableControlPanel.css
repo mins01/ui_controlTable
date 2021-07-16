@@ -72,7 +72,7 @@
   width:100%;
   height:100%;
   min-height:3.6em;
-  grid-template-areas: ". up ." "left . right" ". down split";
+  grid-template-areas: ". up split" "left . right" ". down resize";
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
   /* gap: 0.2em; */
@@ -204,9 +204,16 @@
 }
 .tcp-btn-split{
   grid-area: split;
+  place-self:flex-start flex-end;
+  margin-right:-0.6em;
+  margin-top:-0.6em;
+}
+.tcp-btn-resize{
+  grid-area: resize;
   place-self:flex-end flex-end;
   margin-right:-0.6em;
   margin-bottom:-0.6em;
+  cursor: nw-resize;
 }
 
 .tcp-btn-merge-left::before{
@@ -224,6 +231,10 @@
 .tcp-btn-split::before{
   content: "✳️";
 }
+.tcp-btn-resize::before{
+  content: "⤡";
+}
+
 
 .tcp-controls[data-cell-rpos="first"] .tcp-btn-merge-up ,
 .tcp-controls[data-cell-rpos="last"] .tcp-btn-merge-down ,
@@ -231,4 +242,21 @@
 .tcp-controls[data-cell-cpos="last"] .tcp-btn-merge-right ,
 .tcp-controls[data-cell-merged=""] .tcp-btn-split {
   display: none;
+}
+
+.tcp-resizeHeightCell{
+  outline: 2px solid rgb(75, 207, 119);
+  width:100%;height:100%;
+  box-sizing: border-box;
+  position: absolute;
+  left:0;top:auto;
+
+  z-index: 11;
+  bottom:-1px;
+  height:1px;
+  outline-color: rgb(0, 26, 255);
+  background-color: rgb(0, 26, 255);
+
+  pointer-events: all;
+  cursor: n-resize;
 }

@@ -60,6 +60,7 @@
 					<button class="tcp-btn tcp-btn-deleteRow" data-action="deleteRow"></button>
 					<button class="tcp-btn tcp-btn-insertRow-1" ></button>
 					<div  class="tcp-deco"></div>
+					
 				</div>
 			</div>
 			<div class="tcp-control tcp-col tcpcol">
@@ -68,6 +69,7 @@
 					<button class="tcp-btn tcp-btn-deleteCell" ></button>
 					<button class="tcp-btn tcp-btn-insertCell-1"></button>
 					<div  class="tcp-deco"></div>
+					<div  class="tcp-resizeWidth"></div>
 				</div>
 			</div>
 			<div class="tcp-control tcp-cell tcpcell">
@@ -77,6 +79,7 @@
 					<button class="tcp-btn tcp-btn-merge-down" ></button>
 					<button class="tcp-btn tcp-btn-merge-right" ></button>
 					<button class="tcp-btn tcp-btn-split" ></button>
+					<button class="tcp-btn tcp-btn-resize" ></button>
 					<div  class="tcp-deco"></div>
 				</div>
 			</div>
@@ -106,146 +109,146 @@
 				<caption>사용가능 테이블</caption>
 				<thead>
 					<tr>
-						<th width="100" height="100" class="th-00">th-00</th>
-						<th width="100" class="th-01">th-01</th>
-						<th width="100" class="th-02">th-02</th>
-						<th width="100" class="th-03">th-03</th>
-						<th width="100" class="th-04">th-04</th>
+						<th height="100" class="th-00">th-00</th>
+						<th class="th-01">th-01</th>
+						<th class="th-02">th-02</th>
+						<th class="th-03">th-03</th>
+						<th class="th-04">th-04</th>
 					</tr>
 				</thead>
 				<tr>
-					<td width="100" class="th-10" rowspan="2" colspan="2" >th-10</td>
-					<!-- <td width="100" class="th-11">th-11</td> -->
-					<td width="100" class="th-12">th-12</td>
-					<td width="100" class="th-13">th-13</td>
-					<td width="100" class="th-14">th-14</td>
+					<td class="th-10" rowspan="2" colspan="2" >th-10</td>
+					<!-- <td class="th-11">th-11</td> -->
+					<td class="th-12">th-12</td>
+					<td class="th-13">th-13</td>
+					<td class="th-14">th-14</td>
 				</tr>
 				<tr>
-					<!-- <td width="100" class="th-20">th-20</td> -->
-					<!-- <td width="100" class="th-21">th-21</td> -->
-					<td width="100" class="th-22">th-22</td>
-					<td width="100" class="th-23" rowspan="3" colspan="2">th-23</td>
-					<!-- <td width="100" class="th-24">th-24</td> -->
+					<!-- <td class="th-20">th-20</td> -->
+					<!-- <td class="th-21">th-21</td> -->
+					<td class="th-22">th-22</td>
+					<td class="th-23" rowspan="3" colspan="2">th-23</td>
+					<!-- <td class="th-24">th-24</td> -->
 				</tr>
 				<tr>
-					<td width="100" class="th-30">th-30</td>
-					<td width="100" class="th-31">th-31</td>
-					<td width="100" class="th-32">th-32</td>
-					<!-- <td width="100" class="th-33">th-33</td> -->
-					<!-- <td width="100" class="th-34">th-34</td> -->
+					<td class="th-30">th-30</td>
+					<td class="th-31">th-31</td>
+					<td class="th-32">th-32</td>
+					<!-- <td class="th-33">th-33</td> -->
+					<!-- <td class="th-34">th-34</td> -->
 				</tr>
 				<tr>
-					<td width="100" class="th-40">th-40</td>
-					<td width="100" class="th-41">th-41</td>
-					<td width="100" class="th-42">th-42</td>
-					<!-- <td width="100" class="th-43">th-43</td> -->
-					<!-- <td width="100" class="th-44">th-44</td> -->
+					<td class="th-40">th-40</td>
+					<td class="th-41">th-41</td>
+					<td class="th-42">th-42</td>
+					<!-- <td class="th-43">th-43</td> -->
+					<!-- <td class="th-44">th-44</td> -->
 				</tr>
 				<tr>
-					<td width="100" class="th-50">th-50</td>
-					<td width="100" class="th-51">th-51</td>
-					<td width="100" class="th-52">th-52</td>
-					<td width="100" class="th-53">th-53</td>
-					<td width="100" class="th-54">th-54</td>
+					<td class="th-50">th-50</td>
+					<td class="th-51">th-51</td>
+					<td class="th-52">th-52</td>
+					<td class="th-53">th-53</td>
+					<td class="th-54">th-54</td>
 				</tr>
 			</table>
 			<table class="table table-bordered" contenteditable="true">
 				<caption>사용가능 테이블</caption>
 				<tr>
-					<th width="100">TH</th>
-					<th width="100">TH</th>
-					<th width="100">TH</th>
-					<th width="100">TH</th>
+					<th >TH</th>
+					<th >TH</th>
+					<th >TH</th>
+					<th >TH</th>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				<tr>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
-					<td width="100">TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
+					<td >TD</td>
 				</tr>
 				
 			</table>

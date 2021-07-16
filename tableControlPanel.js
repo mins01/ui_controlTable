@@ -52,6 +52,7 @@ const tableControlPanel = (function(){
             <button class="tcp-btn tcp-btn-merge-down" ></button>\
             <button class="tcp-btn tcp-btn-merge-right" ></button>\
             <button class="tcp-btn tcp-btn-split" title="split" ></button>\
+            <button class="tcp-btn tcp-btn-resize" title="resize" ></button>\
             <div  class="tcp-deco"></div>\
           </div>\
         </div>\
@@ -74,6 +75,41 @@ const tableControlPanel = (function(){
       tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(){ tableControlPanel.mergeCell(0,1)};
       tcpcs.querySelector('.tcp-btn-split').onclick = function(){ tableControlPanel.splitCellAll()};
 
+      // tcpcs.querySelector('.tcp-resizeHeightCell').onclick = function(){  console.log('x');};
+      // resize 동작 처리
+      let x,y;
+      let draging = false;
+      let w_org,h_org
+      tcpcs.querySelector('.tcp-btn-resize').addEventListener('pointerdown',function(event){ 
+        draging = true;
+        event.preventDefault();event.stopPropagation();
+        let cell = tableControlPanel.activedTcpcs.cell;
+        w_org = (cell.style.width?parseFloat(cell.style.width):cell.getBoundingClientRect()['width'])
+        h_org = (cell.style.height?parseFloat(cell.style.height):cell.getBoundingClientRect()['height']);
+        // cell.style.width = ((cell.style.width?parseFloat(cell.style.width):cell.getBoundingClientRect()['width'])+w)+'px'
+        // cell.style.height = ((cell.style.height?parseFloat(cell.style.height):cell.getBoundingClientRect()['height'])+h)+'px'
+        x = event.x;
+        y = event.y;
+      });
+      d.addEventListener('pointermove',function(event){ 
+        if(!draging){return false;}
+        event.preventDefault();event.stopPropagation(); 
+        let x2 = event.x;
+        let y2 = event.y;
+        // tableControlPanel.resizeByCell(x2-x,y2-y);
+        tableControlPanel.resizeCell(w_org+x2-x,h_org+y2-y);
+        // x=x2;
+        // y=y2;
+      });
+      d.addEventListener('pointerup',function(event){
+        if(draging){
+          draging = false;
+          event.preventDefault();event.stopPropagation(); 
+        }
+      })
+
+
+//tcp-resizeHeightCell
       tcpcs.tcprow = tcpcs.querySelector('.tcprow');
       tcpcs.tcpcol = tcpcs.querySelector('.tcpcol');
       tcpcs.tcpcell = tcpcs.querySelector('.tcpcell');
@@ -388,6 +424,20 @@ const tableControlPanel = (function(){
       cell.rowSpan=1;
       if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
+      this.show(cell);
+    },
+    resizeByCell:function(w,h){
+      if(this.debug) console.log('resizeByCell',w,h);
+      let cell = this.activedTcpcs.cell;
+      cell.style.width = ((cell.style.width?parseFloat(cell.style.width):cell.getBoundingClientRect()['width'])+w)+'px'
+      cell.style.height = ((cell.style.height?parseFloat(cell.style.height):cell.getBoundingClientRect()['height'])+h)+'px'
+      this.show(cell);
+    },
+    resizeCell:function(w,h){
+      if(this.debug) console.log('resizeCell',w,h);
+      let cell = this.activedTcpcs.cell;
+      cell.style.width = w+'px'
+      cell.style.height = h+'px'
       this.show(cell);
     },
     getCells:function(tr){
