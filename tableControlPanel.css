@@ -24,21 +24,27 @@
   box-sizing: border-box;
   justify-content: center;
   font-size:14px;
+  opacity: 0.3;
+}
+.tcp-control.tcp-cell{
+  z-index: 12;
 }
 .tcp-control:hover{
-  z-index: 11;
+  z-index: 19;
+  opacity: 1;
 }
 .tcp-control.tcp-row{
   flex-direction: column;
 }
 .tcp-panel{
   overflow: visible;
-  display: flex;
+  
   
   justify-content: space-between;
   flex-wrap: nowrap;
 }
 .tcp-row > .tcp-panel{
+  display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 3em;
@@ -46,12 +52,19 @@
   margin-left: -1.5em;
 }
 .tcp-col > .tcp-panel{
+  display: flex;
   flex-direction: row;
   width: 100%;
   min-width: 3em;
   flex-wrap: wrap;
   z-index: 10;
   margin-top: -1.5em;
+}
+.tcp-cell > .tcp-panel{
+  z-index: 10;
+  margin-top: -1.5em;
+  display: grid;
+  grid-template-areas: ". up ." "left . right" ". down .";
 }
 
 .tcp-control .tcp-deco{
@@ -79,23 +92,27 @@
   text-align: center;
   color:#999;
 }
-.tcp-panel > .tcp-btn[data-action="insertRow,0"]{
+.tcp-panel > .tcp-btn-insertRow-0{
   margin-top:-0.6em;
 }
-.tcp-panel > .tcp-btn[data-action="insertRow,1"]{
+.tcp-panel > .tcp-btn-insertRow-1{
   margin-bottom:-0.6em;
 }
-.tcp-panel > .tcp-btn[data-action="insertCell,0"]{
+.tcp-panel > .tcp-btn-insertCell-0{
   margin-left:-0.6em;
 }
-.tcp-panel > .tcp-btn[data-action="insertCell,1"]{
+.tcp-panel > .tcp-btn-insertCell-1{
   margin-right:-0.6em;
 }
 
 .tcp-btn-insertRow-0::before ,
 .tcp-btn-insertRow-1::before ,
 .tcp-btn-insertCell-0::before ,
-.tcp-btn-insertCell-1::before
+.tcp-btn-insertCell-1::before ,
+.tcp-btn-merge-left::before,
+.tcp-btn-merge-up::before,
+.tcp-btn-merge-right::before,
+.tcp-btn-merge-down::before
 {
   content: "➕";
 }
@@ -105,17 +122,17 @@
   content: "➖";
 }
 
-.tcp-panel > .tcp-btn[data-action="insertCell,0"]:hover  ~ .tcp-deco{
+.tcp-panel > .tcp-btn-insertCell-0:hover  ~ .tcp-deco{
   left:-1px;
   width:1px;
   outline-color: rgb(0, 26, 255);
   background-color: rgb(0, 26, 255);
 }
-.tcp-panel > .tcp-btn[data-action="deleteCell"]:hover  ~ .tcp-deco{
+.tcp-panel > .tcp-btn-deleteCell:hover  ~ .tcp-deco{
   outline-color: rgb(202, 83, 83);
   background-color: rgba(202, 83, 83,0.5);
 }
-.tcp-panel > .tcp-btn[data-action="insertCell,1"]:hover  ~ .tcp-deco{
+.tcp-panel > .tcp-btn-insertCell-1:hover  ~ .tcp-deco{
   left:auto;
   right:-1px;
   width:1px;
@@ -123,20 +140,50 @@
   background-color: rgb(0, 26, 255);
 }
 
-.tcp-panel > .tcp-btn[data-action="insertRow,0"]:hover  ~ .tcp-deco{
+.tcp-panel > .tcp-btn-insertRow-0:hover  ~ .tcp-deco{
   top:-1px;
   height:1px;
   outline-color: rgb(0, 26, 255);
   background-color: rgb(0, 26, 255);
 }
-.tcp-panel > .tcp-btn[data-action="deleteRow"]:hover  ~ .tcp-deco{
+.tcp-panel > .tcp-btn-deleteRow:hover  ~ .tcp-deco{
   outline-color: rgb(202, 83, 83);
   background-color: rgba(202, 83, 83,0.5);
 }
-.tcp-panel > .tcp-btn[data-action="insertRow,1"]:hover  ~ .tcp-deco{
+.tcp-panel > .tcp-btn-insertRow-1:hover  ~ .tcp-deco{
   top:auto;
   bottom:-1px;
   height:1px;
   outline-color: rgb(0, 26, 255);
   background-color: rgb(0, 26, 255);
+}
+
+.tcp-cell > .tcp-panel > .tcp-btn:hover ~ .tcp-deco{
+  outline-color: rgb(83, 202, 129);
+  background-color: rgba(83, 202, 129,0.5);
+}
+
+.tcp-control.tcp-cell{
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.tcp-control.tcp-cell .tcp-panel{
+  margin-right:-2.8em;
+  margin-bottom:-2.8em;
+}
+
+.tcp-btn-merge-left{
+  grid-area: left;
+}
+.tcp-btn-merge-up{
+  grid-area: up;
+}
+.tcp-btn-merge-right{
+  grid-area: right;
+
+}
+.tcp-btn-merge-down{
+  grid-area: down;
+
 }

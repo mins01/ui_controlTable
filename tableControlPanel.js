@@ -27,99 +27,65 @@ const tableControlPanel = (function(){
       w.addEventListener('resize',redraw);
       this.addedEvent = !this.addedEvent;
     },
-    createTcpr:function(){
-      let d = document;
-      let tcpr = d.createElement('div');
-      tcpr.className = 'tcp-row-panel';
-      let insertRowUp = d.createElement('button');
-      insertRowUp.className = 'tcp-btn-insert-row-up';
-      insertRowUp.onclick = function(){ tableControlPanel.insertRow(0)};
-      let insertRowDown = d.createElement('button');
-      insertRowDown.onclick = function(){ tableControlPanel.insertRow(1)};
-      insertRowDown.className = 'tcp-btn-insert-row-down';
-      let deleteRow = d.createElement('button');
-      deleteRow.onclick = function(){ tableControlPanel.deleteRow(0)};
-      deleteRow.className = 'tcp-btn-delete-row';
-      tcpr.appendChild(insertRowUp);
-      tcpr.appendChild(deleteRow);
-      tcpr.appendChild(insertRowDown);
-      let deco = d.createElement('div');
-      deco.className = 'tcp-panel-deco';
-      tcpr.appendChild(deco);
-
-      return tcpr;
-    },
-    createTcpc:function(){
-      let d = document;
-      let tcpc = d.createElement('div');
-      tcpc.className = 'tcp-col-panel';
-
-      let insertCellLeft = d.createElement('button');
-      insertCellLeft.className = 'tcp-btn-insert-cell-left';
-      insertCellLeft.onclick = function(){ tableControlPanel.insertCell(0)};
-      tcpc.appendChild(insertCellLeft);
-      let insertCellRight = d.createElement('button');
-      insertCellRight.onclick = function(){ tableControlPanel.insertCell(1)};
-      insertCellRight.className = 'tcp-btn-insert-cell-right';
-      tcpc.appendChild(insertCellRight);
-      let deleteCell = d.createElement('button');
-      deleteCell.onclick = function(){ tableControlPanel.deleteCell(0)};
-      deleteCell.className = 'tcp-btn-delete-cell';
-      tcpc.appendChild(deleteCell);
-      let deco = d.createElement('div');
-      deco.className = 'tcp-panel-deco';
-      tcpc.appendChild(deco);
-
-      return tcpc;
-    },
     createTcpcs:function(d){
       let html = //<div class="tcp-control tcpcs">
-        '<div class="tcp-control tcp-row tcpr">\
-          <div class="tcp-panel">\
-            <button class="tcp-btn tcp-btn-insertRow-0" data-action="insertRow,0"></button>\
-            <button class="tcp-btn tcp-btn-deleteRow" data-action="deleteRow"></button>\
-            <button class="tcp-btn tcp-btn-insertRow-1" data-action="insertRow,1"></button>\
+        '<div class="tcp-control tcp-row tcprow">\
+          <div class="tcp-panel" title="row control">\
+            <button class="tcp-btn tcp-btn-insertRow-0" ></button>\
+            <button class="tcp-btn tcp-btn-deleteRow" ></button>\
+            <button class="tcp-btn tcp-btn-insertRow-1" ></button>\
             <div  class="tcp-deco"></div>\
           </div>\
         </div>\
-        <div class="tcp-control tcp-col tcpc">\
-          <div class="tcp-panel">\
-            <button class="tcp-btn tcp-btn-insertCell-0" data-action="insertCell,0"></button>\
-            <button class="tcp-btn tcp-btn-deleteCell" data-action="deleteCell"></button>\
-            <button class="tcp-btn tcp-btn-insertCell-1" data-action="insertCell,1"></button>\
+        <div class="tcp-control tcp-col tcpcol">\
+          <div class="tcp-panel"  title="cell control">\
+            <button class="tcp-btn tcp-btn-insertCell-0" ></button>\
+            <button class="tcp-btn tcp-btn-deleteCell" ></button>\
+            <button class="tcp-btn tcp-btn-insertCell-1" ></button>\
             <div  class="tcp-deco"></div>\
           </div>\
-        </div>';
+        </div>\
+        <div class="tcp-control tcp-cell tcpcell">\
+          <div class="tcp-panel" title="merge control">\
+            <button class="tcp-btn tcp-btn-merge-up" ></button>\
+            <button class="tcp-btn tcp-btn-merge-left" ></button>\
+            <button class="tcp-btn tcp-btn-merge-down" ></button>\
+            <button class="tcp-btn tcp-btn-merge-right" ></button>\
+            <div  class="tcp-deco"></div>\
+          </div>\
+        </div>\
+        ';
       //</div>';
       let tcpcs = d.createElement('div');
-      tcpcs.className='tcp-controls';
+      tcpcs.className='tcp-controls tcpcs';
       tcpcs.innerHTML = html;
       tcpcs.querySelector('.tcp-btn-insertRow-0').onclick = function(){ tableControlPanel.insertRow(0)};
       tcpcs.querySelector('.tcp-btn-insertRow-1').onclick = function(){ tableControlPanel.insertRow(1)};
       tcpcs.querySelector('.tcp-btn-deleteRow').onclick = function(){ tableControlPanel.deleteRow()};
+      
       tcpcs.querySelector('.tcp-btn-insertCell-0').onclick = function(){ tableControlPanel.insertCell(0)};
       tcpcs.querySelector('.tcp-btn-insertCell-1').onclick = function(){ tableControlPanel.insertCell(1)};
       tcpcs.querySelector('.tcp-btn-deleteCell').onclick = function(){ tableControlPanel.deleteCell()};
-      tcpcs.tcpr = tcpcs.querySelector('.tcpr');
-      tcpcs.tcpc = tcpcs.querySelector('.tcpc');
+      
+      tcpcs.querySelector('.tcp-btn-merge-up').onclick = function(){ tableControlPanel.mergeCell(-1,0)};
+      tcpcs.querySelector('.tcp-btn-merge-down').onclick = function(){ tableControlPanel.mergeCell(1,0)};
+      tcpcs.querySelector('.tcp-btn-merge-left').onclick = function(){ tableControlPanel.mergeCell(0,-1)};
+      tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(){ tableControlPanel.mergeCell(0,1)};
+
+      tcpcs.tcprow = tcpcs.querySelector('.tcprow');
+      tcpcs.tcpcol = tcpcs.querySelector('.tcpcol');
+      tcpcs.tcpcell = tcpcs.querySelector('.tcpcell');
       document.body.append(tcpcs);
       return tcpcs;
     },
     appendTcps:function(cell){
-      let tcpcs,tcpr,tcpc ;
+      let tcpcs;
       let w = cell.ownerDocument.defaultView;
       let d = w.document
       if(w.__tcpcs){
         if(this.debug) console.log('이미 tcpcs가 생성되어있음.');
         tcpcs = w.__tcpcs;
       }else{
-        // tcpcs = {}
-        // tcpr = this.createTcpr();
-        // d.body.appendChild(tcpr);
-        // tcpc = this.createTcpc();
-        // d.body.appendChild(tcpc);
-        // tcpcs.tcpr = tcpr;
-        // tcpcs.tcpc = tcpc;
         tcpcs = this.createTcpcs(d);
         w.__tcpcs = tcpcs;
       }
@@ -162,6 +128,10 @@ const tableControlPanel = (function(){
       let table = this.activedTcpcs.table;
       let rowsCells = this.activedTcpcs.rowsCells;
 
+      this.activedTcpcs.setAttribute('data-cell-ridx',this.activedTcpcs.cell.__ridx)
+      this.activedTcpcs.setAttribute('data-cell-cidx',this.activedTcpcs.cell.__cidx)
+
+
       let cells = table.querySelectorAll('td,th');
       let firstCell = cells[0];
       let lastCell = cells[cells.length-1];
@@ -178,7 +148,6 @@ const tableControlPanel = (function(){
       let trRect = tr.getBoundingClientRect();
       let cellColSpan1 = cell;
       if(cell.colSpan>1){
-        console.log(cell.__ridx,cell.__cidx);
         for(let i=0,m=rowsCells.length;i<m;i++){
           if(rowsCells[i][cell.__cidx].colSpan==1){
             cellColSpan1 = rowsCells[i][cell.__cidx];
@@ -190,14 +159,21 @@ const tableControlPanel = (function(){
 
 
       let tcpcs = w.__tcpcs;
-      tcpcs.tcpr.style.left=left+'px'
-      tcpcs.tcpr.style.top=tdRect.top+'px'
-      tcpcs.tcpr.style.width=width+'px'
-      tcpcs.tcpr.style.height=trRect.height+'px'
-      tcpcs.tcpc.style.left=tdRect.left+'px'
-      tcpcs.tcpc.style.top=top+'px'
-      tcpcs.tcpc.style.width=cellColSpan1Rect.width+'px'
-      tcpcs.tcpc.style.height=height+'px'
+      tcpcs.tcprow.style.left=left+'px'
+      tcpcs.tcprow.style.top=tdRect.top+'px'
+      tcpcs.tcprow.style.width=width+'px'
+      tcpcs.tcprow.style.height=trRect.height+'px'
+
+      tcpcs.tcpcol.style.left=tdRect.left+'px'
+      tcpcs.tcpcol.style.top=top+'px'
+      tcpcs.tcpcol.style.width=cellColSpan1Rect.width+'px'
+      tcpcs.tcpcol.style.height=height+'px'
+
+      tcpcs.tcpcell.style.left=tdRect.left+'px'
+      tcpcs.tcpcell.style.top=tdRect.top+'px'
+      tcpcs.tcpcell.style.width=tdRect.width+'px'
+      tcpcs.tcpcell.style.height=tdRect.height+'px'
+
     },
     hide:function(){
       if(this.activedTcpcs){
@@ -321,6 +297,73 @@ const tableControlPanel = (function(){
       this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
     },
+    mergeCell(isDown,isRight){
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      let ridx = cell.__ridx;
+      let cidx = cell.__cidx;
+      let table = this.activedTcpcs.table;
+      let rowsCells = this.activedTcpcs.rowsCells;
+      
+      if(isDown == 1){
+        if(!rowsCells[ridx+cell.rowSpan+1-1]){ if(this.debug) console.log('없는 row를 지정하였습니다.'); return false; }
+        let tCell = rowsCells[ridx+cell.rowSpan+1-1][cidx];
+        if (!tCell || tCell.colSpan != cell.colSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
+        if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
+        cell.rowSpan+=tCell.rowSpan;
+      }
+      ridx = cell.__ridx;
+      cidx = cell.__cidx;
+      if(isDown == -1){
+        if(!rowsCells[ridx-1]){ if(this.debug) console.log('없는 row를 지정하였습니다.'); return false; }
+        let tCell = rowsCells[ridx-1][cidx];
+        if (!tCell || tCell.colSpan != cell.colSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
+        if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
+        cell.rowSpan+=tCell.rowSpan;
+        rowsCells[tCell.__ridx][tCell.__cidx] = cell;
+        cell.__ridx = tCell.__ridx;
+        cell.__cidx = tCell.__cidx;
+      }
+      ridx = cell.__ridx;
+      cidx = cell.__cidx;
+
+      if(isRight == 1){
+        if(!rowsCells[ridx] || !rowsCells[ridx][cidx+cell.colSpan+1-1] ){ if(this.debug) console.log('없는 cell을 지정하였습니다.'); return false; }
+        let tCell = rowsCells[ridx][cidx+cell.colSpan+1-1];
+        if (!tCell || tCell.rowSpan != cell.rowSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
+        if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
+        cell.colSpan+=tCell.colSpan;
+      }
+      ridx = cell.__ridx;
+      cidx = cell.__cidx;
+
+      if(isRight == -1){
+        if(!rowsCells[ridx] || !rowsCells[ridx][cidx-1] ){ if(this.debug) console.log('없는 cell을 지정하였습니다.'); return false; }
+        let tCell = rowsCells[ridx][cidx-1];
+        if (!tCell || tCell.rowSpan != cell.rowSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
+        if (tCell.parentNode != cell.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
+        cell.colSpan+=tCell.colSpan;
+        rowsCells[tCell.__ridx][tCell.__cidx] = cell;
+        cell.__ridx = tCell.__ridx;
+        cell.__cidx = tCell.__cidx;
+      }
+      ridx = cell.__ridx;
+      cidx = cell.__cidx;
+
+      for(let i1=cell.__ridx,m1=cell.__ridx+cell.rowSpan;i1<m1;i1++){
+        for(let i2=cell.__cidx,m2=cell.__cidx+cell.colSpan;i2<m2;i2++){
+          if(rowsCells[i1][i2] != cell){
+            rowsCells[i1][i2]=cell
+          }
+        }
+      }
+
+      if(this.debug) console.log(rowsCells);
+      this.redrawTableWithRowsCells(table,rowsCells)
+      this.show(cell);
+    },
     getCells:function(tr){
       let cells = [];
       [...tr.cells].forEach((cell)=>{
@@ -375,6 +418,7 @@ const tableControlPanel = (function(){
       let rows = table.rows;
       let cells = null;
       for(let i=rows.length-1,m=0;i>=m;i--){
+        rows[i].innerHTML = '';
         cells = rowsCells[i];
         for(let i2=cells.length-1,m2=0;i2>=m2;i2--){
           rows[i].prepend(cells[i2])
