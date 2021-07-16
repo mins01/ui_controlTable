@@ -302,68 +302,41 @@ const tableControlPanel = (function(){
       this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
     },
-    mergeCell(isDown,isRight){
-      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
-      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
-      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
-      let cell = this.activedTcpcs.cell;
-      let ridx = cell.__ridx;
-      let cidx = cell.__cidx;
-      let table = this.activedTcpcs.table;
+    rangeMergeCell(r1,c1,r2,c2){
       let rowsCells = this.activedTcpcs.rowsCells;
-      
-      if(isDown == 1){
-        if(!rowsCells[ridx+cell.rowSpan+1-1]){ if(this.debug) console.log('없는 row를 지정하였습니다.'); return false; }
-        let rangedCells = this.toCellsForRowsCells(this.getRangedRowsCells(rowsCells,ridx+cell.rowSpan-1+1,ridx+cell.rowSpan-1+1,cidx,cidx+cell.colSpan-1)) //영형 받는 범위의 셀 찾기
-        let addRowSpan = 0;
-        for(let i=0,m=rangedCells.length;i<m;i++){
-          addRowSpan = rangedCells[i].rowSpan;
-          if(rangedCells[i+1] && rangedCells[i].rowSpan != rangedCells[i+1].rowSpan){
-            if(!able){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
-          }
-          if (rangedCells[i].parentNode.parentNode != cell.parentNode.parentNode){ 
-            console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; 
-          }
+      let table = this.activedTcpcs.table;
+      let cell00 = rowsCells[r1][c1];
+      let cell90 = rowsCells[r2][c1];
+      let cell09 = rowsCells[r1][c2];
+      let cell99 = rowsCells[r2][c2];
+      let cell = cell00;
+
+      if(cell00.__ridx != cell09.__ridx || cell90.__ridx+cell90.rowSpan != cell99.__ridx+cell99.rowSpan
+        || cell00.__cidx != cell90.__cidx || cell09.__cidx+cell09.colSpan != cell99.__cidx+cell99.colSpan)
+        {
+          console.log(cell00,cell09);
+          console.log(cell90,cell99);
+          console.log(cell00.__ridx , cell09.__ridx , cell90.__ridx+cell90.rowSpan , cell99.__ridx+cell99.rowSpan);
+          console.log(cell00.__cidx , cell90.__cidx , cell09.__cidx+cell09.colSpan , cell99.__cidx+cell99.colSpan);
+          console.warn("셀의 모양이 달라 합칠 수 없습니다."); return;
         }
-        cell.rowSpan+=addRowSpan;
-        ridx = cell.__ridx;
-        cidx = cell.__cidx;
-      }else if(isDown == -1){
-        if(!rowsCells[ridx-1]){ if(this.debug) console.log('없는 row를 지정하였습니다.'); return false; }
-        let tCell = rowsCells[ridx-1][cidx];
-        if (!tCell || tCell.colSpan > cell.colSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
-        if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
-        cell.rowSpan+=tCell.rowSpan;
-        rowsCells[tCell.__ridx][tCell.__cidx] = cell;
-        cell.__ridx = tCell.__ridx;
-        cell.__cidx = tCell.__cidx;
+      let t = cell00.parentNode.parentNode;
+      if(t != cell09.parentNode.parentNode || t != cell09.parentNode.parentNode || t != cell90.parentNode.parentNode || t != cell99.parentNode.parentNode){
+        console.warn("같은 그룹(tbody 등) 속의 셀만 합칠 수 있습니다."); return;
       }
-      ridx = cell.__ridx;
-      cidx = cell.__cidx;
 
-      if(isRight == 1){
-        if(!rowsCells[ridx] || !rowsCells[ridx][cidx+cell.colSpan+1-1] ){ if(this.debug) console.log('없는 cell을 지정하였습니다.'); return false; }
-        let tCell = rowsCells[ridx][cidx+cell.colSpan+1-1];
-        if (!tCell || tCell.rowSpan != cell.rowSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
-        if (tCell.parentNode.parentNode != cell.parentNode.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
-        cell.colSpan+=tCell.colSpan;
-      }
-      ridx = cell.__ridx;
-      cidx = cell.__cidx;
+      
+      let nr1 = cell00.__ridx;
+      let nc1 = cell00.__cidx;
+      let nr2 = cell99.__ridx+cell99.rowSpan-1;
+      let nc2 = cell99.__cidx+cell99.colSpan-1;
 
-      if(isRight == -1){
-        if(!rowsCells[ridx] || !rowsCells[ridx][cidx-1] ){ if(this.debug) console.log('없는 cell을 지정하였습니다.'); return false; }
-        let tCell = rowsCells[ridx][cidx-1];
-        if (!tCell || tCell.rowSpan != cell.rowSpan){ console.warn("셀의 모양이 달라 합칠 수 없습니다."); return; }
-        if (tCell.parentNode != cell.parentNode){ console.warn("같은 그룹에 있는 셀만 합칠 수 있습니다."); return; }
-        cell.colSpan+=tCell.colSpan;
-        rowsCells[tCell.__ridx][tCell.__cidx] = cell;
-        cell.__ridx = tCell.__ridx;
-        cell.__cidx = tCell.__cidx;
-      }
-      ridx = cell.__ridx;
-      cidx = cell.__cidx;
-
+      cell.__ridx = nr1;
+      cell.rowSpan = nr2-nr1+1;
+      cell.__cidx = nc1;
+      cell.colSpan = nc2-nc1+1;
+      rowsCells[nr1][nc1] = cell;
+      
       for(let i1=cell.__ridx,m1=cell.__ridx+cell.rowSpan;i1<m1;i1++){
         for(let i2=cell.__cidx,m2=cell.__cidx+cell.colSpan;i2<m2;i2++){
           if(rowsCells[i1][i2] != cell){
@@ -372,9 +345,26 @@ const tableControlPanel = (function(){
         }
       }
 
-      if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
       this.show(cell);
+
+      
+    },
+    mergeCell(isDown,isRight){
+      if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.cell){ if(this.debug) console.log('activedTcpcs.cell가 있어야만 동작합니다.'); return false; }
+      if(!this.activedTcpcs.table){ if(this.debug) console.log('table 속 td,th만 동작합니다.'); return false; }
+      let cell = this.activedTcpcs.cell;
+      if(isDown == 1){
+        this.rangeMergeCell(cell.__ridx,cell.__cidx,cell.__ridx+cell.rowSpan-1+1,cell.__cidx+cell.colSpan-1);
+      }else if(isDown == -1){
+        this.rangeMergeCell(cell.__ridx-1,cell.__cidx,cell.__ridx+cell.rowSpan-1,cell.__cidx+cell.colSpan-1);
+      }
+      if(isRight == 1){
+        this.rangeMergeCell(cell.__ridx,cell.__cidx,cell.__ridx+cell.rowSpan-1,cell.__cidx+cell.colSpan-1+1);
+      }else if(isRight == -1){
+        this.rangeMergeCell(cell.__ridx,cell.__cidx-1,cell.__ridx+cell.rowSpan-1,cell.__cidx+cell.colSpan-1);
+      }
     },
     splitCellAll:function(){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
@@ -450,14 +440,14 @@ const tableControlPanel = (function(){
       })
       return rowsCells;
     },
-    toCellsForRowsCells:function(rowsCells){
+    getCellsForRowsCells:function(rowsCells){
       let new_cells = [];
       rowsCells.forEach(cells => {
         new_cells = new_cells.concat(cells);
       });
       return new_cells;
     },
-    getRangedRowsCells:function(rowsCells,r1,r2,c1,c2){
+    getRangedRowsCells:function(rowsCells,r1,c1,r2,c2){
       let rangedRowsCells = []
       for(let i1=r1,m1=r2;i1<=m1;i1++){
         let row = [];
