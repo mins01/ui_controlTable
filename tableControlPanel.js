@@ -80,6 +80,11 @@ const tableControlPanel = (function(){
       let x,y;
       let draging = false;
       let w_org,h_org
+      tcpcs.querySelector('.tcp-btn-resize').addEventListener('touchstart',function(event){ 
+        event.preventDefault();event.stopPropagation();
+        return false;
+      })
+      
       tcpcs.querySelector('.tcp-btn-resize').addEventListener('pointerdown',function(event){ 
         draging = true;
         event.preventDefault();event.stopPropagation();
