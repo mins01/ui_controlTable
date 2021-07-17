@@ -24,7 +24,7 @@
   box-sizing: border-box;
   justify-content: center;
   font-size:14px;
-  opacity: 0.5;
+  opacity: 0.3;
 }
 .tcp-control.tcp-cell{
   z-index: 12;
@@ -87,6 +87,9 @@
   position: absolute;
   left:0;top:0;
 }
+.tcp-control.tcp-cell .tcp-deco{
+  outline: 2px solid rgb(53, 121, 224);
+}
 .tcp-btn{
   z-index: 10;
   pointer-events: all;
@@ -99,12 +102,19 @@
   cursor: pointer;
   box-shadow: 0 0 3px rgba(0,0,0,0.5);
   background-color: #fff;
-  display: flex;
+  /* display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
+  text-align: center; */
   color:#999;
 }
+.tcp-btn::before ,
+.tcp-btn::after{
+  display: block;
+  font-size:0.8em;
+  margin:0 auto;
+}
+
 .tcp-panel > .tcp-btn-insertRow-0{
   margin-top:-0.6em;
 }
@@ -118,22 +128,7 @@
   margin-right:-0.6em;
 }
 
-.tcp-btn-insertRow-0::before ,
-.tcp-btn-insertRow-1::before ,
-.tcp-btn-insertCell-0::before ,
-.tcp-btn-insertCell-1::before ,
-.tcp-btn-merge-left::before,
-.tcp-btn-merge-up::before,
-.tcp-btn-merge-right::before,
-.tcp-btn-merge-down::before
-{
-  content: "➕";
-}
-.tcp-btn-deleteRow::before ,
-.tcp-btn-deleteCell::before
-{
-  content: "➖";
-}
+
 
 .tcp-panel > .tcp-btn-insertCell-0:hover  ~ .tcp-deco{
   left:-1px;
@@ -179,6 +174,11 @@
   outline-color: rgb(202, 83, 83);
   background-color: rgba(202, 83, 83,0.5);
 }
+.tcp-cell > .tcp-panel > .tcp-btn.tcp-btn-resize:hover ~ .tcp-deco{
+  outline-color: rgb(53, 121, 224);
+  background-color: rgba(53, 121, 224,0.5);
+}
+
 
 
 
@@ -217,24 +217,7 @@
   cursor: nw-resize;
 }
 
-.tcp-btn-merge-left::before{
-  content: "⏪";
-}
-.tcp-btn-merge-up::before{
-  content: "⏫";
-}
-.tcp-btn-merge-right::before{
-  content: "⏩";
-}
-.tcp-btn-merge-down::before{
-  content: "⏬";
-}
-.tcp-btn-split::before{
-  content: "✳️";
-}
-.tcp-btn-resize::before{
-  content: "⤡";
-}
+
 
 
 .tcp-controls[data-cell-rpos="first"] .tcp-btn-merge-up ,
@@ -245,19 +228,94 @@
   display: none;
 }
 
-.tcp-resizeHeightCell{
-  outline: 2px solid rgb(75, 207, 119);
-  width:100%;height:100%;
-  box-sizing: border-box;
-  position: absolute;
-  left:0;top:auto;
 
-  z-index: 11;
-  bottom:-1px;
-  height:1px;
-  outline-color: rgb(0, 26, 255);
-  background-color: rgb(0, 26, 255);
+/* 버튼 속 아이콘 */
 
-  pointer-events: all;
-  cursor: n-resize;
+.tcp-btn-insertRow-0::before ,
+.tcp-btn-insertRow-1::before ,
+.tcp-btn-insertCell-0::before ,
+.tcp-btn-insertCell-1::before 
+{
+  content:"";
+  width:1em;height:0.2em;
+  background-color: #000000;
+  margin-top: 0.5em;
+}
+.tcp-btn-insertRow-0::after ,
+.tcp-btn-insertRow-1::after ,
+.tcp-btn-insertCell-0::after ,
+.tcp-btn-insertCell-1::after 
+{
+  content:"";
+  width:0.2em;height:1em;
+  background-color: #000000;
+  margin-top: -0.6em;
+}
+.tcp-btn-deleteRow::before ,
+.tcp-btn-deleteCell::before
+{
+  content:"";
+  width:1em;height:0.6em;
+  border-bottom: 0.2em solid #000000;
+  margin-bottom:0.4em;
+}
+
+.tcp-btn-merge-left::before{
+  content:"";
+  width:0px;height:0px;
+  border-right:0.8em solid #000;
+  border-top:0.4em solid transparent;
+  border-bottom:0.4em solid transparent;
+}
+.tcp-btn-merge-up::before{
+  content:"";
+  width:0px;height:0px;
+  border-bottom:0.8em solid #000;
+  border-left:0.4em solid transparent;
+  border-right:0.4em solid transparent;
+}
+.tcp-btn-merge-right::before{
+  content:"";
+  width:0px;height:0px;
+  border-left:0.8em solid #000;
+  border-top:0.4em solid transparent;
+  border-bottom:0.4em solid transparent;
+}
+.tcp-btn-merge-down::before{
+  content:"";
+  width:0px;height:0px;
+  border-top:0.8em solid #000;
+  border-left:0.4em solid transparent;
+  border-right:0.4em solid transparent;
+  
+}
+.tcp-btn-split::before{
+  content:"";
+  /* font-size: 0.6em; */
+  width:1em;height:1em;
+  border:2px solid #000000;
+}
+.tcp-btn-split::after{
+  content:"";
+  /* font-size: 0.6em; */
+  width:1px;height:1em;
+  border-left:1px dotted #000000;
+  margin-top:-1em;
+}
+.tcp-btn-resize::before{
+  content:"";
+  font-size: 0.6em;
+  width:0px;height:0px;
+  border-top:1em solid #000;
+  border-right:1em solid transparent;
+  /* margin: 0 auto -0.2em auto; */
+}
+.tcp-btn-resize::after{
+  content:"";
+  font-size: 0.6em;
+  width:0px;height:0px;
+  border-bottom:1em solid #000;
+  border-left:1em solid transparent;
+  margin-top: -0.9em;
+  margin-left: 0.5em;
 }
