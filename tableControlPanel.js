@@ -160,7 +160,7 @@ const tableControlPanel = (function(){
     },
     show:function(node){
       let r = this._show(node);
-      tableControlPanel.cbEvent('show',null);
+      if(r) tableControlPanel.cbEvent('show',null);
       return r;
     },
     _show:function(node){
@@ -168,14 +168,14 @@ const tableControlPanel = (function(){
       let cell = node.closest('td,th');
       if(!cell || (cell.tagName!='TD' && cell.tagName!='TH')){
         if(this.debug) console.log('TD,TH만 동작');
-        this._hide();
+        this.hide();
         return false;
       }
       this.lastCell = cell;
       let enabled = cell.closest('.tcp-enabled,.tcp-disabled');
       if(!enabled || !enabled.classList.contains('tcp-enabled')){
         if(this.debug) console.log('.tcp-enabled 속에서만 동작');
-        this._hide();
+        this.hide();
         return false;
       }
       // console.log("show 동작");
@@ -228,21 +228,28 @@ const tableControlPanel = (function(){
       tcpcs.tcpcell.style.top=tdRect.top+'px'
       tcpcs.tcpcell.style.width=tdRect.width+'px'
       tcpcs.tcpcell.style.height=tdRect.height+'px'
+      return true;
 
     },
     hide:function(){
-      this.hide();
-      let r = this.hide();
-      tableControlPanel.cbEvent('hide',null);
+      let r = this._hide();
+      if(r) tableControlPanel.cbEvent('hide',null);
       return r;
     },
     _hide:function(){
-      if(this.activedTcpcs){
+      let r = 0;
+      if(this.activedTcpcs && this.activedTcpcs.d){
         let d = this.activedTcpcs.d;
-        d.body.classList.remove('tcp-on');
+        if(d.body.classList.contains('tcp-on')){
+          d.body.classList.remove('tcp-on');
+          r++;
+        }
       }
-      window.document.body.classList.remove('tcp-on');
-      tableControlPanel.cbEvent('hide');
+      if(window.document.body.classList.contains('tcp-on')){
+        window.document.body.classList.remove('tcp-on');
+        r++;
+      }
+      return r>0;
     },
     insertRow:function(isDown){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
@@ -300,7 +307,7 @@ const tableControlPanel = (function(){
       })
       this.redrawTableWithRowsCells(table,rowsCells)
       if(this.debug) console.log(rowsCells);
-      this._hide();
+      this._show(cell);
     },
     insertCell(isRight){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
