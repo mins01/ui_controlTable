@@ -19,6 +19,7 @@ const tableControlPanel = (function(){
     debug:false,
     activedTcpcs:null,
     addedEvent:false,
+    lastCell:null,
     addEvent:function(w){
       if(this.addedEvent){return false;}
       // w.addEventListener('focus',searchTd);
@@ -26,6 +27,9 @@ const tableControlPanel = (function(){
       w.addEventListener('scroll',redraw);
       w.addEventListener('resize',redraw);
       this.addedEvent = !this.addedEvent;
+    },
+    cbEvent:function(event){
+      if(this.debug){ console.log('cbEvent',this.lastCell,event)}
     },
     createTcpcs:function(d){
       let html = //<div class="tcp-control tcpcs">
@@ -61,19 +65,19 @@ const tableControlPanel = (function(){
       let tcpcs = d.createElement('div');
       tcpcs.className='tcp-controls tcpcs';
       tcpcs.innerHTML = html;
-      tcpcs.querySelector('.tcp-btn-insertRow-0').onclick = function(){ tableControlPanel.insertRow(0)};
-      tcpcs.querySelector('.tcp-btn-insertRow-1').onclick = function(){ tableControlPanel.insertRow(1)};
-      tcpcs.querySelector('.tcp-btn-deleteRow').onclick = function(){ tableControlPanel.deleteRow()};
+      tcpcs.querySelector('.tcp-btn-insertRow-0').onclick = function(event){ tableControlPanel.insertRow(0); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-insertRow-1').onclick = function(event){ tableControlPanel.insertRow(1); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-deleteRow').onclick = function(event){ tableControlPanel.deleteRow(); tableControlPanel.cbEvent(event); };
       
-      tcpcs.querySelector('.tcp-btn-insertCell-0').onclick = function(){ tableControlPanel.insertCell(0)};
-      tcpcs.querySelector('.tcp-btn-insertCell-1').onclick = function(){ tableControlPanel.insertCell(1)};
-      tcpcs.querySelector('.tcp-btn-deleteCell').onclick = function(){ tableControlPanel.deleteCell()};
+      tcpcs.querySelector('.tcp-btn-insertCell-0').onclick = function(event){ tableControlPanel.insertCell(0); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-insertCell-1').onclick = function(event){ tableControlPanel.insertCell(1); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-deleteCell').onclick = function(event){ tableControlPanel.deleteCell(); tableControlPanel.cbEvent(event); };
       
-      tcpcs.querySelector('.tcp-btn-merge-up').onclick = function(){ tableControlPanel.mergeCell(-1,0)};
-      tcpcs.querySelector('.tcp-btn-merge-down').onclick = function(){ tableControlPanel.mergeCell(1,0)};
-      tcpcs.querySelector('.tcp-btn-merge-left').onclick = function(){ tableControlPanel.mergeCell(0,-1)};
-      tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(){ tableControlPanel.mergeCell(0,1)};
-      tcpcs.querySelector('.tcp-btn-split').onclick = function(){ tableControlPanel.splitCellAll()};
+      tcpcs.querySelector('.tcp-btn-merge-up').onclick = function(event){ tableControlPanel.mergeCell(-1,0); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-merge-down').onclick = function(event){ tableControlPanel.mergeCell(1,0); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-merge-left').onclick = function(event){ tableControlPanel.mergeCell(0,-1); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(event){ tableControlPanel.mergeCell(0,1); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-split').onclick = function(event){ tableControlPanel.splitCellAll(); tableControlPanel.cbEvent(event); };
 
       // tcpcs.querySelector('.tcp-resizeHeightCell').onclick = function(){  console.log('x');};
       // resize 동작 처리
@@ -109,6 +113,7 @@ const tableControlPanel = (function(){
       d.addEventListener('pointerup',function(event){
         if(draging){
           draging = false;
+          tableControlPanel.cbEvent(event);
           event.preventDefault();event.stopPropagation(); 
         }
       })
@@ -163,6 +168,7 @@ const tableControlPanel = (function(){
         this.hide();
         return false;
       }
+      this.lastCell = cell;
       let enabled = cell.closest('.tcp-enabled,.tcp-disabled');
       if(!enabled || !enabled.classList.contains('tcp-enabled')){
         if(this.debug) console.log('.tcp-enabled 속에서만 동작');
