@@ -8,8 +8,6 @@ const tableControlPanel = (function(){
  }
   let searchTd = (event)=>{
     let node = event.target;
-    // console.log(node);
-    // var node = getSelectionStart();
     tableControlPanel.show(node);
   }
   let redraw = (event)=>{
@@ -28,8 +26,8 @@ const tableControlPanel = (function(){
       w.addEventListener('resize',redraw);
       this.addedEvent = !this.addedEvent;
     },
-    cbEvent:function(event){
-      if(this.debug){ console.log('cbEvent',this.lastCell,event)}
+    cbEvent:function(desc,event){
+      if(this.debug){ console.log('cbEvent',desc,this.lastCell,event)}
     },
     createTcpcs:function(d){
       let html = //<div class="tcp-control tcpcs">
@@ -65,19 +63,19 @@ const tableControlPanel = (function(){
       let tcpcs = d.createElement('div');
       tcpcs.className='tcp-controls tcpcs';
       tcpcs.innerHTML = html;
-      tcpcs.querySelector('.tcp-btn-insertRow-0').onclick = function(event){ tableControlPanel.insertRow(0); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-insertRow-1').onclick = function(event){ tableControlPanel.insertRow(1); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-deleteRow').onclick = function(event){ tableControlPanel.deleteRow(); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-insertRow-0').onclick = function(event){ tableControlPanel.insertRow(0); tableControlPanel.cbEvent('insertRow-0',event); };
+      tcpcs.querySelector('.tcp-btn-insertRow-1').onclick = function(event){ tableControlPanel.insertRow(1); tableControlPanel.cbEvent('insertRow-1',event); };
+      tcpcs.querySelector('.tcp-btn-deleteRow').onclick = function(event){ tableControlPanel.deleteRow(); tableControlPanel.cbEvent('deleteRow',event); };
       
-      tcpcs.querySelector('.tcp-btn-insertCell-0').onclick = function(event){ tableControlPanel.insertCell(0); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-insertCell-1').onclick = function(event){ tableControlPanel.insertCell(1); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-deleteCell').onclick = function(event){ tableControlPanel.deleteCell(); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-insertCell-0').onclick = function(event){ tableControlPanel.insertCell(0); tableControlPanel.cbEvent('insertCell-0',event); };
+      tcpcs.querySelector('.tcp-btn-insertCell-1').onclick = function(event){ tableControlPanel.insertCell(1); tableControlPanel.cbEvent('insertCell-1',event); };
+      tcpcs.querySelector('.tcp-btn-deleteCell').onclick = function(event){ tableControlPanel.deleteCell(); tableControlPanel.cbEvent('deleteCell',event); };
       
-      tcpcs.querySelector('.tcp-btn-merge-up').onclick = function(event){ tableControlPanel.mergeCell(-1,0); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-merge-down').onclick = function(event){ tableControlPanel.mergeCell(1,0); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-merge-left').onclick = function(event){ tableControlPanel.mergeCell(0,-1); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(event){ tableControlPanel.mergeCell(0,1); tableControlPanel.cbEvent(event); };
-      tcpcs.querySelector('.tcp-btn-split').onclick = function(event){ tableControlPanel.splitCellAll(); tableControlPanel.cbEvent(event); };
+      tcpcs.querySelector('.tcp-btn-merge-up').onclick = function(event){ tableControlPanel.mergeCell(-1,0); tableControlPanel.cbEvent('merge-up',event); };
+      tcpcs.querySelector('.tcp-btn-merge-down').onclick = function(event){ tableControlPanel.mergeCell(1,0); tableControlPanel.cbEvent('merge-down',event); };
+      tcpcs.querySelector('.tcp-btn-merge-left').onclick = function(event){ tableControlPanel.mergeCell(0,-1); tableControlPanel.cbEvent('merge-left',event); };
+      tcpcs.querySelector('.tcp-btn-merge-right').onclick = function(event){ tableControlPanel.mergeCell(0,1); tableControlPanel.cbEvent('merge-right',event); };
+      tcpcs.querySelector('.tcp-btn-split').onclick = function(event){ tableControlPanel.splitCellAll(); tableControlPanel.cbEvent('split',event); };
 
       // tcpcs.querySelector('.tcp-resizeHeightCell').onclick = function(){  console.log('x');};
       // resize 동작 처리
@@ -113,7 +111,7 @@ const tableControlPanel = (function(){
       d.addEventListener('pointerup',function(event){
         if(draging){
           draging = false;
-          tableControlPanel.cbEvent(event);
+          tableControlPanel.cbEvent('resize',event);
           event.preventDefault();event.stopPropagation(); 
         }
       })
@@ -161,18 +159,23 @@ const tableControlPanel = (function(){
       }
     },
     show:function(node){
+      let r = this._show(node);
+      tableControlPanel.cbEvent('show',null);
+      return r;
+    },
+    _show:function(node){
       if(node.closest('.tcp-controls')){return}
       let cell = node.closest('td,th');
       if(!cell || (cell.tagName!='TD' && cell.tagName!='TH')){
         if(this.debug) console.log('TD,TH만 동작');
-        this.hide();
+        this._hide();
         return false;
       }
       this.lastCell = cell;
       let enabled = cell.closest('.tcp-enabled,.tcp-disabled');
       if(!enabled || !enabled.classList.contains('tcp-enabled')){
         if(this.debug) console.log('.tcp-enabled 속에서만 동작');
-        this.hide();
+        this._hide();
         return false;
       }
       // console.log("show 동작");
@@ -228,12 +231,18 @@ const tableControlPanel = (function(){
 
     },
     hide:function(){
+      this.hide();
+      let r = this.hide();
+      tableControlPanel.cbEvent('hide',null);
+      return r;
+    },
+    _hide:function(){
       if(this.activedTcpcs){
-        // let w = this.activedTcpcs.w;
         let d = this.activedTcpcs.d;
         d.body.classList.remove('tcp-on');
       }
       window.document.body.classList.remove('tcp-on');
+      tableControlPanel.cbEvent('hide');
     },
     insertRow:function(isDown){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
@@ -262,7 +271,7 @@ const tableControlPanel = (function(){
       })
       if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
-      this.show(cell);
+      this._show(cell);
     },
     deleteRow:function(){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
@@ -291,7 +300,7 @@ const tableControlPanel = (function(){
       })
       this.redrawTableWithRowsCells(table,rowsCells)
       if(this.debug) console.log(rowsCells);
-      this.hide();
+      this._hide();
     },
     insertCell(isRight){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
@@ -318,12 +327,12 @@ const tableControlPanel = (function(){
           new_td.innerHTML = '&nbsp;';
           // rowsCells[ridx][cidx] = new_td;
           rowsCells[ridx].splice(cidx,0,new_td);
-          console.log(ridx,cidx);
+          // console.log(ridx,cidx);
         }
       })
-      if(this.debug) console.log(rowsCells);
+      // if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
-      this.show(cell);
+      this._show(cell);
     },
     deleteCell(){
       if(!this.activedTcpcs){ if(this.debug) console.log('activedTcpcs가 있어야만 동작합니다.'); return false; }
@@ -347,7 +356,7 @@ const tableControlPanel = (function(){
       })
       if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
-      this.show(cell);
+      this._show(cell);
     },
     rangeMergeCell(r1,c1,r2,c2){
       let rowsCells = this.activedTcpcs.rowsCells;
@@ -393,7 +402,7 @@ const tableControlPanel = (function(){
       }
 
       this.redrawTableWithRowsCells(table,rowsCells)
-      this.show(cell);
+      this._show(cell);
 
       
     },
@@ -435,21 +444,21 @@ const tableControlPanel = (function(){
       cell.rowSpan=1;
       if(this.debug) console.log(rowsCells);
       this.redrawTableWithRowsCells(table,rowsCells)
-      this.show(cell);
+      this._show(cell);
     },
     resizeByCell:function(w,h){
       if(this.debug) console.log('resizeByCell',w,h);
       let cell = this.activedTcpcs.cell;
       cell.style.width = ((cell.style.width?parseFloat(cell.style.width):cell.getBoundingClientRect()['width'])+w)+'px'
       cell.style.height = ((cell.style.height?parseFloat(cell.style.height):cell.getBoundingClientRect()['height'])+h)+'px'
-      this.show(cell);
+      this._show(cell);
     },
     resizeCell:function(w,h){
       if(this.debug) console.log('resizeCell',w,h);
       let cell = this.activedTcpcs.cell;
       cell.style.width = w+'px'
       cell.style.height = h+'px'
-      this.show(cell);
+      this._show(cell);
     },
     getCells:function(tr){
       let cells = [];
