@@ -222,9 +222,9 @@
 
 .tcp-controls[data-cell-rfirst="Y"] .tcp-btn-merge-up ,
 .tcp-controls[data-cell-rlast="Y"] .tcp-btn-merge-down ,
-.tcp-controls[data-cell-cfist="Y"] .tcp-btn-merge-left ,
+.tcp-controls[data-cell-cfirst="Y"] .tcp-btn-merge-left ,
 .tcp-controls[data-cell-clast="Y"] .tcp-btn-merge-right ,
-.tcp-controls[data-cell-merged="Y"] .tcp-btn-split {
+.tcp-controls[data-cell-merged="N"] .tcp-btn-split {
   display: none;
 }
 
