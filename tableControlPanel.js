@@ -154,7 +154,7 @@ const tableControlPanel = (function(){
     redraw:function(){
       if(this.activedTcpcs && this.activedTcpcs.cell && this.activedTcpcs.d){
         if(this.activedTcpcs.d.body.classList.contains('tcp-on')){
-          this.show(this.activedTcpcs.cell)
+          this._show(this.activedTcpcs.cell)
         }
       }
     },
