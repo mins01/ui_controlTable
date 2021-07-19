@@ -26,6 +26,14 @@ const tableControlPanel = (function(){
       w.addEventListener('resize',redraw);
       this.addedEvent = !this.addedEvent;
     },
+    removeEvent:function(w){
+      if(!this.addedEvent){return false;}
+      // w.addEventListener('focus',searchTd);
+      w.removeEventListener('click',searchTd);
+      w.removeEventListener('scroll',redraw);
+      w.removeEventListener('resize',redraw);
+      this.addedEvent = !this.addedEvent;
+    },
     cbEvent:function(desc,event){
       if(this.debug){ console.log('cbEvent',desc,this.lastCell,event)}
     },
@@ -121,7 +129,7 @@ const tableControlPanel = (function(){
       tcpcs.tcprow = tcpcs.querySelector('.tcprow');
       tcpcs.tcpcol = tcpcs.querySelector('.tcpcol');
       tcpcs.tcpcell = tcpcs.querySelector('.tcpcell');
-      document.body.append(tcpcs);
+      d.body.append(tcpcs);
       return tcpcs;
     },
     appendTcps:function(cell){
@@ -233,6 +241,12 @@ const tableControlPanel = (function(){
       tcpcs.tcpcell.style.height=tdRect.height+'px'
       return true;
 
+    },
+    remove:function(){
+      if(this.activedTcpcs && this.activedTcpcs.parentNode){
+        this.activedTcpcs.parentNode.removeChild(this.activedTcpcs.parentNode);
+        this.activedTcpcs = null;
+      }
     },
     hide:function(){
       let r = this._hide();
