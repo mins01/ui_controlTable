@@ -145,9 +145,12 @@ const tableControlPanel = (function(){
 
       this.activedTcpcs.setAttribute('data-cell-ridx',cell.__ridx)
       this.activedTcpcs.setAttribute('data-cell-cidx',cell.__cidx)
-      this.activedTcpcs.setAttribute('data-cell-rpos',cell.__ridx==0?'first':(cell.__ridx==this.activedTcpcs.rowsCells.length-1?'last':''))
-      this.activedTcpcs.setAttribute('data-cell-cpos',cell.__cidx==0?'first':(cell.__cidx==this.activedTcpcs.rowsCells[0].length-1?'last':''))
-      this.activedTcpcs.setAttribute('data-cell-merged',cell.colSpan+cell.rowSpan>2?'merged':'')
+      this.activedTcpcs.setAttribute('data-cell-rfirst',cell.__ridx==0?'Y':'N');  
+      this.activedTcpcs.setAttribute('data-cell-cfirst',cell.__cidx==0?'Y':'N');  
+      this.activedTcpcs.setAttribute('data-cell-rlast',(cell.__ridx+cell.rowSpan-1)==this.activedTcpcs.rowsCells.length-1?'Y':'N');
+      this.activedTcpcs.setAttribute('data-cell-clast',(cell.__cidx+cell.colSpan-1)==this.activedTcpcs.rowsCells[0].length-1?'Y':'N');
+
+      this.activedTcpcs.setAttribute('data-cell-merged',cell.colSpan+cell.rowSpan>2?'Y':'N')
 
       return tcpcs;
     },
